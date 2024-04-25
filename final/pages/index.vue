@@ -7,7 +7,7 @@
   </v-container>
   <v-container class="bg-surface-variant">
     <v-row>
-      <v-col cols="4" v-for="n in 3" :key="n">
+      <v-col cols="4" v-for="n in sampleDocs" :key="n">
         <v-card
           @click="$router.push('/documentView')"
           height="200"
@@ -26,4 +26,6 @@
 // have each v-card link to documentView, connecting the id of
 // each document to the documentView (somehow??), so the view knows
 // document to open
+
+const sampleDocs = ['1', '2', '3'];
 </script>
