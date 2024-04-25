@@ -1,9 +1,15 @@
 <template>
   <v-app>
-    <v-app-bar color="secondary" elevation="2">
+    <v-app-bar :color="theme.global.name.value === 'dark' ? '' : 'secondary'">
       <template v-slot:prepend>
-        <v-app-bar-title class="ml-6 cursor-pointer" @click="$router.push('/')">
-          Notes
+        <v-icon
+          class="ml-5 mr-2"
+          @click="$router.push('/')"
+          :color="theme.global.name.value === 'dark' ? 'secondary' : ''"
+          >mdi-book-open-blank-variant</v-icon
+        >
+        <v-app-bar-title class="cursor-pointer" @click="$router.push('/')"
+          >Notes
         </v-app-bar-title></template
       >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -26,6 +32,9 @@
 </template>
 
 <script setup lang="ts">
+import { useTheme } from 'vuetify';
+
+const theme = useTheme();
 const drawer = ref(false);
 const settingsDialog = ref(false);
 </script>

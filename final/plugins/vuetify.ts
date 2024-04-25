@@ -7,7 +7,7 @@ import { createVuetify } from 'vuetify';
 const light = {
   dark: false,
   colors: {
-    primary: colors.yellow.darken2,
+    primary: colors.grey.lighten4,
     secondary: colors.yellow.lighten2,
     accent: '#ffc107',
     error: '#ff5722',
@@ -20,7 +20,8 @@ const light = {
 const dark = {
   dark: true,
   colors: {
-    primary: '#FDD835',
+    primary: colors.grey.darken4,
+    primaryLighten: colors.grey.darken3,
     secondary: '#FFF59D',
     accent: '#ffc107',
     error: '#ff5722',
