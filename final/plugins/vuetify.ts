@@ -1,14 +1,14 @@
 // import this after install `@mdi/font` package
 import '@mdi/font/css/materialdesignicons.css';
-
+import colors from 'vuetify/lib/util/colors';
 import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
 
 const light = {
   dark: false,
   colors: {
-    primary: '#4A148C',
-    secondary: '#AA00FF',
+    primary: colors.yellow.darken2,
+    secondary: colors.yellow.lighten2,
     accent: '#ffc107',
     error: '#ff5722',
     warning: '#e91e63',

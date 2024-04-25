@@ -5,7 +5,7 @@
       @click="$router.push('/documentView')"
       icon="mdi-plus"></v-btn>
   </v-container>
-  <v-container class="bg-surface-variant">
+  <v-container>
     <v-row>
       <v-col cols="4" v-for="n in sampleDocs" :key="n">
         <v-card
