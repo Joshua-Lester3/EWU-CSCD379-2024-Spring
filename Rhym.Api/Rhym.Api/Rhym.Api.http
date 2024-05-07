@@ -1,0 +1,6 @@
+@Rhym.Api_HostAddress = http://localhost:5113
+
+GET {{Rhym.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

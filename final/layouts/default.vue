@@ -9,7 +9,7 @@
           >mdi-book-open-blank-variant</v-icon
         >
         <v-app-bar-title class="cursor-pointer" @click="$router.push('/')"
-          >Notes
+          >Rhym
         </v-app-bar-title></template
       >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>

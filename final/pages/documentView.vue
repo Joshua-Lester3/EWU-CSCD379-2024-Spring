@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-card
+    <!-- <v-card
       elevation="5"
       tile
       min-height="450"
@@ -8,9 +8,11 @@
       min-width="350"
       width="auto"
       color="primary"
-      class="mx-auto my-15">
+      class="mx-auto my-15"> -->
+    <v-container class="ma-10">
       <Document />
-    </v-card>
+    </v-container>
+    <!-- </v-card> -->
   </v-row>
 </template>
 

@@ -9,7 +9,12 @@
     </v-container>
     <v-container>
       <v-row>
-        <v-col cols="4" v-for="n in sampleDocs" :key="n">
+        <v-col
+          class="my-4"
+          align="center"
+          cols="4"
+          v-for="n in sampleDocs"
+          :key="n">
           <v-card
             @click="$router.push('/documentView')"
             height="200"
@@ -32,5 +37,5 @@
 // document to open
 import { useTheme } from 'vuetify';
 const theme = useTheme();
-const sampleDocs = ['1', '2', '3'];
+const sampleDocs = ['1', '2', '3', '4', '5'];
 </script>
