@@ -1,12 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Rhym.Api.Models;
 
-namespace Rhym.Api.Controllers
+namespace Rhym.Api.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class DocumentController : ControllerBase
 {
-	public class DocumentController : Controller
+	[HttpGet("GetDocumentList")]
+	public List<Document> GetDocumentList()
 	{
-		public IActionResult Index()
-		{
-			return View();
-		}
+		return new List<Document> {
+			new Document()
+			{
+				DocumentId = 0,
+				UserId = 0,
+				Title = "Document, YAY!"
+			},
+			new Document()
+			{
+				DocumentId = 1,
+				UserId = 1,
+				Title = "Document2, YAY!"
+			}
+			};
 	}
 }
