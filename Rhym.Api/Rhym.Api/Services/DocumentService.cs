@@ -20,7 +20,7 @@ public class DocumentService
 		return await _context.Documents.Where(document => document.UserId == userId).ToListAsync();
 	}
 
-	public async Task<Document> AddDocument(DocumentRequest request)
+	public async Task<Document> AddDocument(DocumentDto request)
 	{
 		Document? foundDocument = await _context.Documents.
 			FirstOrDefaultAsync(dbDocument => dbDocument.UserId == request.UserId && dbDocument.Title == request.Title);

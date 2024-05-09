@@ -23,7 +23,7 @@ public class DocumentServiceTests : DatabaseTestBase
 	public async Task AddDocument_SuccessfullyAddsDocument()
 	{
 		// Arrange
-		DocumentRequest request = new()
+		DocumentDto request = new()
 		{
 			UserId = 0,
 			Title = "Super duper title",
@@ -44,13 +44,13 @@ public class DocumentServiceTests : DatabaseTestBase
 	public async Task GetDocumentList_ReturnsPostedDocuments()
 	{
 		// Arrange
-		DocumentRequest requestOne = new()
+		DocumentDto requestOne = new()
 		{
 			UserId = 0,
 			Title = "Super duper title",
 			Content = "This doc is super duper!"
 		};
-		DocumentRequest requestTwo = new()
+		DocumentDto requestTwo = new()
 		{
 			UserId = 0,
 			Title = "Super duper title 2",

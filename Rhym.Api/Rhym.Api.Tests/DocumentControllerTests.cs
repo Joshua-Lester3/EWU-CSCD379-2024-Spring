@@ -82,7 +82,7 @@ public class DocumentControllerTests
 	private static async Task<HttpResponseMessage> AddOneDocument()
 	{
 		var client = _factory.CreateClient();
-		DocumentRequest request = new()
+		DocumentDto request = new()
 		{
 			UserId = 0,
 			Title = "Super duper title",

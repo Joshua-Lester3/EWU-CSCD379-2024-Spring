@@ -1,10 +1,18 @@
-﻿namespace Rhym.Api.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Rhym.Api.Models;
 
 public class Document
 {
 	public int DocumentId { get; set; }
+
+	[Required]
 	public int UserId { get; set; }
-	public string Title { get; set; } = null!;
-	public string Content { get; set; } = null!;
+	public User? User { get; set; }
+
+	[Required]
+    public int DocumentDataId { get; set; }
+
+    public DocumentData? DocumentData { get; set; }
 
 }

@@ -1,6 +1,6 @@
 ﻿namespace Rhym.Api.Requests;
 
-public record DocumentRequest
+public record DocumentDto
 {
 	public int UserId { get; set; }
 	public string Title { get; set; } = null!;
