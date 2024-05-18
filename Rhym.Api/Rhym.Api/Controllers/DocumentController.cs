@@ -18,17 +18,17 @@ public class DocumentController : ControllerBase
 	[HttpGet("GetDocumentList")]
 	public async Task<List<Document>> GetDocumentListAsync(int userId)
 	{
-		return await _service.GetDocumentList(userId);
+		return await _service.GetDocumentListAsync(userId);
 	}
 
 	[HttpPost("AddDocument")]
 	public async Task<Document> AddDocumentAsync(DocumentDto dto)
 	{
-		return await _service.AddDocument(dto);
+		return await _service.AddDocumentAsync(dto);
 	}
 
-	[HttpGet("GetDocument")]
-	public async Task<Document> GetDocumentAsync(int documentId)
+	[HttpGet("GetDocumentData")]
+	public async Task<DocumentData?> GetDocumentAsync(int documentId)
 	{
 		return await _service.GetDocumentDataAsync(documentId);
 	}

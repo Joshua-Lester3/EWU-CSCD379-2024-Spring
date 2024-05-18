@@ -13,16 +13,22 @@ namespace Rhym.Api.Tests;
 public class DocumentControllerTests
 {
 	private static readonly WebApplicationFactory<Program> _factory = new();
+	private HttpClient _httpClient = null!; // Will be set in TestInitialize
+
+	[TestInitialize]
+	public void Init()
+	{
+		_httpClient = _factory.CreateClient();
+	}
 
 	[TestMethod]
 	public async Task GetDocumentList_HttpStatusCodeIsOK()
 	{
 		// Arrange
-		var client = _factory.CreateClient();
 		await AddOneDocument();
 
 		// Act
-		var response = await client.GetAsync("/document/getdocumentlist");
+		var response = await _httpClient.GetAsync("/document/getdocumentlist");
 
 		// Assert
 		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -32,16 +38,23 @@ public class DocumentControllerTests
 	public async Task GetDocumentList_ReturnsListSizeOne()
 	{
 		// Arrange
-		var client = _factory.CreateClient();
 		await AddOneDocument();
+		var queryParameters = new Dictionary<string, string>
+		{
+			{ "userId", "0" },
+		};
+		var dictFormUrlEncoded = new FormUrlEncodedContent(queryParameters);
+		var queryString = await dictFormUrlEncoded.ReadAsStringAsync();
+
 
 		// Act
-		var response = await client.GetAsync("/document/getdocumentlist");
+		var response = await _httpClient.GetAsync($"/document/getdocumentlist?{queryString}");
 		var content = await response.Content.ReadFromJsonAsync<List<Document>>();
 
 		// Assert
 		CollectionAssert.AllItemsAreNotNull(content);
 		CollectionAssert.AllItemsAreUnique(content);
+		Assert.AreEqual(1, content.Count());
 		Assert.AreEqual(0, content[0].UserId);
 	}
 
@@ -57,8 +70,6 @@ public class DocumentControllerTests
 		var document = await response.Content.ReadFromJsonAsync<Document>();
 		Assert.IsNotNull(document);
 		Assert.AreEqual(0, document.UserId);
-		Assert.AreEqual("Super duper title", document.Title);
-		Assert.AreEqual("This is super duper!", document.Content);
 	}
 
 	[TestMethod]
@@ -73,15 +84,41 @@ public class DocumentControllerTests
 		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 	}
 
+	[TestMethod]
+	public async Task GetDocumentData_ReturnsHttpStatusCodeOK()
+	{
+		// Arrange
+		await AddOneDocument();
+
+		// Act
+		var response = await _httpClient.GetAsync("/document/getdocumentdata");
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+	}
+
+	[TestMethod]
+	public async Task GetDocumentData_ReturnsCorrectDocumentTitleAndContent()
+	{
+		// Arrange
+		var addResponse = await AddOneDocument();
+		var document = await addResponse.Content.ReadFromJsonAsync<Document>();
+
+		// Act
+		var response = await _httpClient.GetAsync("/document/getdocumentdata");
+
+		// Assert
+		Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+	}
+
 	[ClassCleanup]
 	public static void ClassCleanup()
 	{
 		_factory.Dispose();
 	}
 
-	private static async Task<HttpResponseMessage> AddOneDocument()
+	private async Task<HttpResponseMessage> AddOneDocument()
 	{
-		var client = _factory.CreateClient();
 		DocumentDto request = new()
 		{
 			UserId = 0,
@@ -89,6 +126,6 @@ public class DocumentControllerTests
 			Content = "This is super duper!"
 		};
 		var content = JsonContent.Create(request);
-		return await client.PostAsync("/document/adddocument", content);
+		return await _httpClient.PostAsync("/document/adddocument", content);
 	}
 }

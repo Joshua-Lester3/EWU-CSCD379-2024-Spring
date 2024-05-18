@@ -29,6 +29,29 @@ namespace Rhym.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"));
 
+                    b.Property<int>("DocumentDataId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DocumentId");
+
+                    b.HasIndex("DocumentDataId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("Rhym.Api.Models.DocumentData", b =>
+                {
+                    b.Property<int>("DocumentDataId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentDataId"));
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -37,12 +60,9 @@ namespace Rhym.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.HasKey("DocumentDataId");
 
-                    b.HasKey("DocumentId");
-
-                    b.ToTable("Documents");
+                    b.ToTable("DocumentData");
                 });
 
             modelBuilder.Entity("Rhym.Api.Models.User", b =>
@@ -60,6 +80,25 @@ namespace Rhym.Api.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Rhym.Api.Models.Document", b =>
+                {
+                    b.HasOne("Rhym.Api.Models.DocumentData", "DocumentData")
+                        .WithMany()
+                        .HasForeignKey("DocumentDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rhym.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DocumentData");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

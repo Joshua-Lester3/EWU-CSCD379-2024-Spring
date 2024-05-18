@@ -11,8 +11,7 @@ public class Document
 	public User? User { get; set; }
 
 	[Required]
-    public int DocumentDataId { get; set; }
-
+	public int DocumentDataId { get; set; }
     public DocumentData? DocumentData { get; set; }
 
 }

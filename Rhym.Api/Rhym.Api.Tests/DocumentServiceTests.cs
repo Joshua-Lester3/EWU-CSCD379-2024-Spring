@@ -31,12 +31,10 @@ public class DocumentServiceTests : DatabaseTestBase
 		};
 
 		// Act
-		Document document = await _service.AddDocument(request);
+		Document document = await _service.AddDocumentAsync(request);
 
 		// Assert
 		Assert.AreEqual(0, document.UserId);
-		Assert.AreEqual("Super duper title", document.Title);
-		Assert.AreEqual("This doc is super duper!", document.Content);
 		CollectionAssert.Contains(_context.Documents.ToList(), document);
 	}
 	
@@ -56,13 +54,19 @@ public class DocumentServiceTests : DatabaseTestBase
 			Title = "Super duper title 2",
 			Content = "This doc is super duper times two!"
 		};
-		await _service.AddDocument(requestOne);
-		await _service.AddDocument(requestTwo);
+		await _service.AddDocumentAsync(requestOne);
+		await _service.AddDocumentAsync(requestTwo);
 
 		// Act
-		List<Document> documents = await _service.GetDocumentList(0);
+		List<Document> documents = await _service.GetDocumentListAsync(0);
 
 		// Assert
 		Assert.AreEqual(2, documents.Count);
+	}
+
+	[TestCleanup] 
+	public void Cleanup()
+	{
+		_context.Dispose();
 	}
 }
