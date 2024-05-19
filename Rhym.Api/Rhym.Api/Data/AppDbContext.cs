@@ -10,4 +10,5 @@ public class AppDbContext : DbContext
 	public DbSet<Document> Documents { get; set; }
 	public DbSet<DocumentData> DocumentData { get; set; }
 	public DbSet<User> Users { get; set; }
+	public DbSet<Word> Words { get; set; }
 }

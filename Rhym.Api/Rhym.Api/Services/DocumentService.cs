@@ -23,16 +23,16 @@ public class DocumentService
 	public async Task<Document> AddDocumentAsync(DocumentDto request)
 	{
 		Document? foundDocument = await _context.Documents.
-			Where(dbDocument => dbDocument.UserId == request.UserId && dbDocument.Title == request.Title).
+			Where(dbDocument => dbDocument.DocumentId == request.DocumentId).
 			Include(document => document.DocumentData).
-			FirstOrDefaultAsync(); //DocumentData will never be null here
+			FirstOrDefaultAsync();
 		if (foundDocument is null)
 		{
 			lock (_addingDocumentLock)
 			{
 				foundDocument = _context.Documents.
 					Include(dbDocument => dbDocument.DocumentData).
-					FirstOrDefault(dbDocument => dbDocument.UserId == request.UserId && dbDocument.Title == request.Title); //DocumentData will never be null here
+					FirstOrDefault(dbDocument => dbDocument.DocumentId == request.DocumentId);
 				if (foundDocument is null)
 				{
 					DocumentData data = new DocumentData
@@ -52,8 +52,14 @@ public class DocumentService
 					return addedDocument;
 				} else
 				{
-					foundDocument.Title = request.Title; //DocumentData will never be null here
-					foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
+					var foundDocumentData = _context.DocumentData.FirstOrDefault(documentData => documentData == foundDocument.DocumentData);
+					if (foundDocumentData is null)
+					{
+						throw new InvalidOperationException("Invalid state: No DocumentData for the corresponding Document entity.");
+					}
+					foundDocumentData.Content = request.Content;
+					//foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
+					foundDocument.Title = request.Title;
 					_context.SaveChanges();
 					return foundDocument;
 				}
@@ -63,21 +69,32 @@ public class DocumentService
 		{
 			lock (_changingDocumentLock)
 			{
-				foundDocument.Title = request.Title; //DocumentData will never be null here
-				foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
+				var foundDocumentData = _context.DocumentData.FirstOrDefault(documentData => documentData == foundDocument.DocumentData);
+				if (foundDocumentData is null) {
+					throw new InvalidOperationException("Invalid state: No DocumentData for the corresponding Document entity.");
+				}
+				foundDocumentData.Content = request.Content;
+				//foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
+				foundDocument.Title = request.Title;
 				_context.SaveChanges();
 				return foundDocument;
 			}
 		}
 	}
 
-	public async Task<DocumentData?> GetDocumentDataAsync(int documentId)
+	public async Task<DocumentDto?> GetDocumentDataAsync(int documentId)
 	{
-		var result = _context.Documents
+		var result = await _context.Documents
 			.Where(document => document.DocumentId == documentId)
 			.Include(document => document.DocumentData)
-			.FirstOrDefault()?
-			.DocumentData;
+			.Select(document => new DocumentDto
+			{
+				UserId = document.UserId,
+				DocumentId = document.DocumentId,
+				Title = document.Title,
+				Content = document.DocumentData!.Content,
+			})
+			.FirstOrDefaultAsync();
 		return result;
 	}
 }

@@ -2,6 +2,7 @@
 using Rhym.Api.Models;
 using Rhym.Api.Requests;
 using Rhym.Api.Services;
+using Rhym.Api.Dtos;
 
 namespace Rhym.Api.Controllers;
 
@@ -28,7 +29,7 @@ public class DocumentController : ControllerBase
 	}
 
 	[HttpGet("GetDocumentData")]
-	public async Task<DocumentData?> GetDocumentAsync(int documentId)
+	public async Task<DocumentDto?> GetDocumentAsync(int documentId)
 	{
 		return await _service.GetDocumentDataAsync(documentId);
 	}

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Rhym.Api;
 using Rhym.Api.Data;
 using Rhym.Api.Services;
 
@@ -29,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 builder.Services.AddScoped<DocumentService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<WordService>();
 
 var app = builder.Build();
 
@@ -36,6 +38,7 @@ using (var scope = app.Services.CreateScope())
 {
 	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 	db.Database.Migrate();
+	await Seeder.Seed(db);
 }
 
 // Configure the HTTP request pipeline.
