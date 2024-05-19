@@ -13,14 +13,14 @@
           class="my-4"
           align="center"
           cols="4"
-          v-for="n in sampleDocs"
-          :key="n">
+          v-for="document in documents"
+          :key="document.documentId">
           <v-card
             @click="$router.push('/documentView')"
             height="200"
             width="150"
             elevation="2"
-            >{{ n }}</v-card
+            >{{ document.title }}</v-card
           >
         </v-col>
       </v-row>
@@ -36,6 +36,21 @@
 // each document to the documentView (somehow??), so the view knows
 // document to open
 import { useTheme } from 'vuetify';
+import Axios from 'axios';
+
 const theme = useTheme();
-const sampleDocs = ['1', '2', '3', '4', '5'];
+const documents = ref<Document[]>();
+
+interface Document {
+  documentId: number;
+  title: string;
+}
+
+try {
+  const url = `document/getDocumentList?userId=1`;
+  const response = await Axios.get(url);
+  documents.value = response.data;
+} catch (error) {
+  console.error('Error fetching selected word:', error);
+}
 </script>
