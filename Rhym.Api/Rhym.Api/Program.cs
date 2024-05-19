@@ -28,6 +28,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 	options.UseSqlServer(connectionString);
 });
 builder.Services.AddScoped<DocumentService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
@@ -45,6 +46,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(AllOrigins);
 
 app.UseAuthorization();
 

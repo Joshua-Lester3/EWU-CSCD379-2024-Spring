@@ -4,7 +4,7 @@
       <v-btn
         size="70"
         elevation="2"
-        @click="$router.push('/documentView')"
+        @click="$router.push('/documentView?id=-1')"
         icon="mdi-plus"></v-btn>
     </v-container>
     <v-container>

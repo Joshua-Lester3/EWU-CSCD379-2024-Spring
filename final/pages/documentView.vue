@@ -17,9 +17,34 @@
 </template>
 
 <script setup lang="ts">
+import Axios from 'axios';
 const modelValue = defineModel<{ id: number }>();
 const documentHeight = ref(0);
 const documentWidth = ref(0);
+const route = useRoute();
+const content = ref('');
+const title = ref('');
+
+try {
+  let id = route.query.id as number;
+  console.log(id);
+  debugger;
+  if (id < 0) {
+    const url = 'document/addDocument';
+    const response = await Axios.post(url, {
+      UserId: 1,
+      Title: 'Untitled',
+      Content: '',
+    });
+    title.value = response.data.title;
+  } else {
+    const url = `document/getDocumentData?documentId=${id}`;
+    const response = await Axios.get(url);
+    content.value = response.data.content;
+  }
+} catch (error) {
+  console.error('Error fetching selected word:', error);
+}
 
 // function updateSize() {
 //   if (true) {

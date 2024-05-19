@@ -41,7 +41,7 @@ public class DocumentControllerTests
 		await AddOneDocument();
 		var queryParameters = new Dictionary<string, string>
 		{
-			{ "userId", "0" },
+			{ "userId", "1" },
 		};
 		var dictFormUrlEncoded = new FormUrlEncodedContent(queryParameters);
 		var queryString = await dictFormUrlEncoded.ReadAsStringAsync();

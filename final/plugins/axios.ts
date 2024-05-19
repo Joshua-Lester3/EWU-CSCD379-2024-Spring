@@ -6,7 +6,7 @@ export default defineNuxtPlugin(() => {
       window.location.hostname === 'localhost' ||
       window.location.hostname === '172.31.112.1'
     ) {
-      Axios.defaults.baseURL = 'https://localhost:7266/';
+      Axios.defaults.baseURL = 'https://localhost:7166/';
     } else {
       Axios.defaults.baseURL = 'NO-API-YET';
     }

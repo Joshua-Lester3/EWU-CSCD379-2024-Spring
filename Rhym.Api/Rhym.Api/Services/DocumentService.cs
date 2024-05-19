@@ -23,35 +23,36 @@ public class DocumentService
 	public async Task<Document> AddDocumentAsync(DocumentDto request)
 	{
 		Document? foundDocument = await _context.Documents.
-			Include(dbDocument => dbDocument.DocumentData).
-			FirstOrDefaultAsync(dbDocument => dbDocument.UserId == request.UserId && dbDocument.DocumentData!.Title == request.Title); //DocumentData will never be null here
+			Where(dbDocument => dbDocument.UserId == request.UserId && dbDocument.Title == request.Title).
+			Include(document => document.DocumentData).
+			FirstOrDefaultAsync(); //DocumentData will never be null here
 		if (foundDocument is null)
 		{
 			lock (_addingDocumentLock)
 			{
 				foundDocument = _context.Documents.
 					Include(dbDocument => dbDocument.DocumentData).
-					FirstOrDefault(dbDocument => dbDocument.UserId == request.UserId && dbDocument.DocumentData!.Title == request.Title); //DocumentData will never be null here
+					FirstOrDefault(dbDocument => dbDocument.UserId == request.UserId && dbDocument.Title == request.Title); //DocumentData will never be null here
 				if (foundDocument is null)
 				{
 					DocumentData data = new DocumentData
 					{
-						Title = request.Title,
 						Content = request.Content,
 					};
+					_context.DocumentData.Add(data);
+					_context.SaveChanges();
 					Document addedDocument = new Document
 					{
 						UserId = request.UserId,
-						DocumentData = data
+						DocumentData = data,
+						Title = request.Title,
 					};
 					_context.Documents.Add(addedDocument);
-					_context.SaveChanges();
-					_context.DocumentData.Add(data);
 					_context.SaveChanges();
 					return addedDocument;
 				} else
 				{
-					foundDocument.DocumentData!.Title = request.Title; //DocumentData will never be null here
+					foundDocument.Title = request.Title; //DocumentData will never be null here
 					foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
 					_context.SaveChanges();
 					return foundDocument;
@@ -62,7 +63,7 @@ public class DocumentService
 		{
 			lock (_changingDocumentLock)
 			{
-				foundDocument.DocumentData!.Title = request.Title; //DocumentData will never be null here
+				foundDocument.Title = request.Title; //DocumentData will never be null here
 				foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
 				_context.SaveChanges();
 				return foundDocument;
@@ -72,6 +73,11 @@ public class DocumentService
 
 	public async Task<DocumentData?> GetDocumentDataAsync(int documentId)
 	{
-		return _context.Documents.First(document => document.DocumentId == documentId)?.DocumentData;
+		var result = _context.Documents
+			.Where(document => document.DocumentId == documentId)
+			.Include(document => document.DocumentData)
+			.FirstOrDefault()?
+			.DocumentData;
+		return result;
 	}
 }
