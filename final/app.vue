@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import { useTheme } from 'vuetify';
+import nuxtStorage from 'nuxt-storage';
 
 const theme = useTheme();
 
