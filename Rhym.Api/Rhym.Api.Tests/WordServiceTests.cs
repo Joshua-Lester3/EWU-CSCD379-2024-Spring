@@ -25,18 +25,17 @@ public class WordServiceTests : DatabaseTestBase
 	}
 
 	[TestMethod]
-	public void GetPerfectRhymes_Success()
+	public async Task GetPerfectRhymes_Success()
 	{
 		// Arrange
 		string word = "ABET";
-		Assert.AreEqual(_context.Words.Count(), 4);
 
 		// Act
-		var perfectRhymes = _service.GetPerfectRhymes(word);
+		var perfectRhymes = await _service.GetPerfectRhymes(word);
 
 		// Assert
-		Assert.AreEqual("ABET", perfectRhymes[0]);
-
+		Assert.AreEqual(1, perfectRhymes.Count());
+		CollectionAssert.Contains(perfectRhymes, "BABETTE");
 	}
 
 	[TestCleanup]

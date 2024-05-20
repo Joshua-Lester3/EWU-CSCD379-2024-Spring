@@ -14,8 +14,8 @@ public class WordController
 		_service = service;
 	}
 	[HttpGet("PerfectRhyme")]
-	public List<string> GetPerfectRhymes(string word)
+	public async Task<List<string>> GetPerfectRhymes(string word)
 	{
-		return _service.GetPerfectRhymes(word);
+		return await _service.GetPerfectRhymes(word);
 	}
 }

@@ -1,4 +1,5 @@
-﻿using Rhym.Api.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Rhym.Api.Data;
 
 namespace Rhym.Api.Services;
 
@@ -11,18 +12,55 @@ public class WordService
 		_context = context;
 	}
 
-	public List<string> GetPerfectRhymes(string givenWord)
+	public async Task<List<string>> GetPerfectRhymes(string givenWord)
 	{
-		var wordPronunciation = _context.Words.FirstOrDefault(word => word.WordKey.Equals(givenWord.ToUpper()));
+		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
 
-		if (wordPronunciation == null)
+		if (foundWord == null)
 		{
 			throw new InvalidOperationException("Word not in dictionary");
 		}
+		var foundWordPronunciation = foundWord.Pronunciation.Split(' ').Reverse();
 
+		var result = (await _context.Words.ToListAsync()).Where(word =>
+		{
+			if (word.WordKey.Equals(givenWord.ToUpper()))
+			{
+				return false;
+			}
+			var pronunciation = word.Pronunciation.Split(' ').Reverse();
+			var foundEnumerator = foundWordPronunciation.GetEnumerator();
+			var wordEnumerator = pronunciation.GetEnumerator();
+			foundEnumerator.MoveNext();
+			wordEnumerator.MoveNext();
+			while (foundEnumerator.Current != null) {
+				if (wordEnumerator.Current == null)
+				{
+					return false;
+				}
+				string foundSyllable = RemoveStress(foundEnumerator);
+				string wordSyllable = RemoveStress(wordEnumerator);
+				if (!foundSyllable.Equals(wordSyllable))
+				{
+					foundEnumerator.Dispose();
+					wordEnumerator.Dispose();
+					return false;
+				}
+				foundEnumerator.MoveNext();
+				wordEnumerator.MoveNext();
+			}
+			wordEnumerator.Dispose();
+			foundEnumerator.Dispose();
+			
+			return true;
+		}).Select(word => word.WordKey).ToList();
 
+		return result;
+	}
 
-		return [wordPronunciation.WordKey];
+	private static string RemoveStress(IEnumerator<string> enumerator)
+	{
+		return enumerator.Current.Length > 2 ? enumerator.Current.Substring(0, 2) : enumerator.Current;
 	}
 
 	public List<string> Vowels = new List<string>
