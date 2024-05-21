@@ -17,5 +17,5 @@ export class RhymeUtils {
 
 export enum AlgorithmType {
   PerfectRhyme,
-  Nothing,
+  ChooseRhyme,
 }
