@@ -24,4 +24,10 @@ public class WordController
 	{
 		return await _service.GetPronunciation(word);
 	}
+
+	[HttpGet]
+	public async Task<List<string>> GetImperfectRhymes(string[] syllables)
+	{
+		return await _service.GetImperfectRhymes(syllables);
+	}
 }
