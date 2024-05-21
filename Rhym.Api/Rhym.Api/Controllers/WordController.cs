@@ -18,4 +18,10 @@ public class WordController
 	{
 		return await _service.GetPerfectRhymes(word);
 	}
+
+	[HttpGet("Pronunciation")]
+	public async Task<string?> GetPronunciation(string word)
+	{
+		return await _service.GetPronunciation(word);
+	}
 }

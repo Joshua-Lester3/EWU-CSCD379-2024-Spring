@@ -2,9 +2,8 @@
 
 - fix grid on index.vue
 - make grid responsive
-- backend :D
-- for later: make half window on bottom of documentView.vue page for rhyme helper
 
-#### Maybe todo:
+### ideas:
 
-- improve page on documentView.vue
+- don't abstract pronunciation to user. show the user the pronunciation and let them choose which to match to
+- two page option: one page of normal words, one page of pronunciation words

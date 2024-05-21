@@ -63,6 +63,13 @@ public class WordService
 		return enumerator.Current.Length > 2 ? enumerator.Current.Substring(0, 2) : enumerator.Current;
 	}
 
+	internal async Task<string?> GetPronunciation(string givenWord)
+	{
+		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
+		return foundWord?.Pronunciation;
+
+	}
+
 	public List<string> Vowels = new List<string>
 	{
 		"AA", "AE", "AH", "AO", "AW", "AY", 
