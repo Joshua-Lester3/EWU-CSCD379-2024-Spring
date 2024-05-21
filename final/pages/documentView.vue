@@ -53,7 +53,10 @@
     </v-container>
     <!-- </v-card> -->
   </v-row>
-  <RhymDialog v-model="rhymDialog" />
+  <RhymDialog
+    v-model:showModel="rhymDialog"
+    v-model:content="content"
+    @appendWord="word => appendWord(word)" />
 </template>
 
 <script setup lang="ts">
@@ -93,7 +96,6 @@ try {
   console.error('Error fetching selected word:', error);
 }
 async function saveChanges() {
-  debugger;
   try {
     const url = 'document/addDocument';
     const response = await Axios.post(url, {
@@ -105,6 +107,13 @@ async function saveChanges() {
   } catch (error) {
     console.error('Error posting document information', error);
   }
+}
+
+function appendWord(word: string) {
+  if (!content.value.endsWith(' ')) {
+    word = ' ' + word;
+  }
+  content.value = content.value.concat(word.toLowerCase());
 }
 
 // function updateSize() {
