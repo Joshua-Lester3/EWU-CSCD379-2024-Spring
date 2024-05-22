@@ -25,7 +25,7 @@ public class Seeder
 
 				while (line != null)
 				{
-					if (!line.StartsWith(";"))
+					if (!line.StartsWith("#"))
 					{
 						string[] array = line.Split("  ");
 						if (array.Length != 2)
@@ -33,10 +33,14 @@ public class Seeder
 							throw new InvalidOperationException("Text file is not properly formatted");
 						}
 
+						var syllables = array[1].Split(" - ");
+						var pronunciation = String.Join(' ', syllables).Split(' ');
+
 						Word word = new Word
 						{
 							WordKey = array[0].Trim(),
-							Pronunciation = array[1].Trim()
+							Phonemes = pronunciation,
+							Syllables = syllables
 						};
 						await db.Words.AddAsync(word);
 					}

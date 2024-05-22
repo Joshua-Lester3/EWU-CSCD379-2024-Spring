@@ -22,24 +22,24 @@ public class WordService
 		{
 			throw new InvalidOperationException("Word not in dictionary");
 		}
-		var foundWordPronunciation = foundWord.Pronunciation.Split(' ').Reverse();
+		var foundWordPhonemes = foundWord.Phonemes.Reverse();
 
 		var result = (await _context.Words.ToListAsync())
-			.Where(word => FilterPerfectRhymes(word, givenWord, foundWordPronunciation))
+			.Where(word => FilterPerfectRhymes(word, givenWord, foundWordPhonemes))
 			.Select(word => word.WordKey)
 			.ToList();
 
 		return result;
 	}
 
-	public bool FilterPerfectRhymes(Word word, string givenWord, IEnumerable<string> foundWordPronunciation)
+	public bool FilterPerfectRhymes(Word word, string givenWord, IEnumerable<string> foundWordPhonemes)
 	{
 		if (word.WordKey.Equals(givenWord.ToUpper()))
 		{
 			return false;
 		}
-		var pronunciation = word.Pronunciation.Split(' ').Reverse();
-		var foundEnumerator = foundWordPronunciation.GetEnumerator();
+		var pronunciation = word.Phonemes.Reverse();
+		var foundEnumerator = foundWordPhonemes.GetEnumerator();
 		var wordEnumerator = pronunciation.GetEnumerator();
 		foundEnumerator.MoveNext();
 		wordEnumerator.MoveNext();
@@ -71,28 +71,32 @@ public class WordService
 		return syllable.Length > 2 ? syllable.Substring(0, 2) : syllable;
 	}
 
-	public async Task<string?> GetPronunciation(string givenWord)
+	public async Task<string[]?> GetPhonemes(string givenWord)
 	{
 		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
-		return foundWord?.Pronunciation;
+		return foundWord?.Phonemes;
 	}
 
-	public async Task<List<string>> GetImperfectRhymes(string[] syllables)
+	public async Task<List<string>> GetImperfectRhymes(string phonemesString)
 	{
+		string[] phonemes = phonemesString.Split(' ');
 		var result = (await _context.Words.ToListAsync())
 			.Where(word =>
 			{
-				var dbSyllables = word.Pronunciation.Split(' ');
 				int index = 0;
-				foreach (string dbSyllable in dbSyllables)
+				foreach (string dbSyllable in word.Phonemes)
 				{
-					var dbSyllableStressless = RemoveStress(dbSyllable);
-					var syllableStressless = RemoveStress(syllables[index]);
-					if (dbSyllableStressless.Equals(syllableStressless)) {
-						index++;
+					if (index < phonemes.Length)
+					{
+						var dbSyllableStressless = RemoveStress(dbSyllable);
+						var syllableStressless = RemoveStress(phonemes[index]);
+						if (dbSyllableStressless.Equals(syllableStressless))
+						{
+							index++;
+						}
 					}
 				}
-				return index == syllables.Length;
+				return index == phonemes.Length;
 			})
 			.Select(word => word.WordKey)
 			.ToList();

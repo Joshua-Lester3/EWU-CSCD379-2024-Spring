@@ -13,6 +13,7 @@ public class WordController
 	{
 		_service = service;
 	}
+
 	[HttpGet("PerfectRhyme")]
 	public async Task<List<string>> GetPerfectRhymes(string word)
 	{
@@ -20,14 +21,14 @@ public class WordController
 	}
 
 	[HttpGet("Pronunciation")]
-	public async Task<string?> GetPronunciation(string word)
+	public async Task<string[]?> GetPronunciation(string word)
 	{
-		return await _service.GetPronunciation(word);
+		return await _service.GetPhonemes(word);
 	}
 
-	[HttpGet]
-	public async Task<List<string>> GetImperfectRhymes(string[] syllables)
+	[HttpGet("ImperfectRhyme")]
+	public async Task<List<string>> GetImperfectRhymes(string phonemesString)
 	{
-		return await _service.GetImperfectRhymes(syllables);
+		return await _service.GetImperfectRhymes(phonemesString);
 	}
 }

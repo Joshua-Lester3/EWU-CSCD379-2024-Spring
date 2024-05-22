@@ -10,5 +10,8 @@ public class Word
 	public required string WordKey { get; set; }
 
 	[Required]
-	public required string Pronunciation { get; set; }
+	public required string[] Phonemes { get; set; }
+
+	[Required]
+	public required string[] Syllables { get; set; }
 }

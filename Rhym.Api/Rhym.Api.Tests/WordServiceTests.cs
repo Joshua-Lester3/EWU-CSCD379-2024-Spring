@@ -17,10 +17,10 @@ public class WordServiceTests : DatabaseTestBase
 	{
 		_context = new AppDbContext(Options);
 		_service = new(_context);
-		await _context.Words.AddAsync(new Word { WordKey = "ABET", Pronunciation = "AH0 B EH1 T" });
-		await _context.Words.AddAsync(new Word { WordKey = "BABETTE", Pronunciation = "B AH0 B EH1 T" });
-		await _context.Words.AddAsync(new Word { WordKey = "BET", Pronunciation = "B EH1 T" });
-		await _context.Words.AddAsync(new Word { WordKey = "BETA", Pronunciation = "B EY1 T AH0" });
+		await _context.Words.AddAsync(new Word { WordKey = "ABET", Phonemes = ["AH0", "B", "EH1", "T"], Syllables = ["AH0", "B EH1 T"] });
+		await _context.Words.AddAsync(new Word { WordKey = "BABETTE", Phonemes = ["B", "AH0", "B", "EH1", "T"], Syllables = ["B AH0", "B EH1 T"] });
+		await _context.Words.AddAsync(new Word { WordKey = "BET", Phonemes =[ "B", "EH1", "T"], Syllables = ["B EH1 T"] });
+		await _context.Words.AddAsync(new Word { WordKey = "BETA", Phonemes = ["B", "EY1", "T", "AH0"], Syllables = ["B EY1", "T AH0"] });
 		await _context.SaveChangesAsync();
 	}
 

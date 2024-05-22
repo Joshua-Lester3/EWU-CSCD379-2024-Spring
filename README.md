@@ -2,6 +2,7 @@
 
 - fix grid on index.vue
 - make grid responsive
+- add about page/presentation on project
 
 ### ideas:
 
