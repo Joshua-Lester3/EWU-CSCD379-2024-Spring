@@ -47,7 +47,6 @@ public class Seeder
 					line = reader.ReadLine();
 				}
 				reader.Close();
-				Console.ReadLine();
 				await db.SaveChangesAsync();
 			}
 			catch (FileNotFoundException e)

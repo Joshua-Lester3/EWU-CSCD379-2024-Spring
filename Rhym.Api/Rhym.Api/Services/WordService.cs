@@ -71,10 +71,16 @@ public class WordService
 		return syllable.Length > 2 ? syllable.Substring(0, 2) : syllable;
 	}
 
-	public async Task<string[]?> GetPhonemes(string givenWord)
+	public async Task<string[]> GetPhonemes(string givenWord)
 	{
 		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
-		return foundWord?.Phonemes;
+		return foundWord?.Phonemes ?? [givenWord]; // Return given word if not found
+	}
+
+	public async Task<string[]> GetSyllables(string givenWord)
+	{
+		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
+		return foundWord?.Syllables ?? [givenWord]; // Return given word if not found
 	}
 
 	public async Task<List<string>> GetImperfectRhymes(string phonemesString)

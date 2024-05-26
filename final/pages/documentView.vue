@@ -6,12 +6,30 @@
       :color="theme.global.name.value === 'dark' ? 'secondary' : ''"
       >mdi-book-open-blank-variant</v-icon
     >
+    <v-row>
+      <v-col cols="6">
+        <v-text-field
+          v-model="title"
+          density="compact"
+          variant="solo"
+          class="mt-5"
+          bg-color="secondary"
+          flat />
+      </v-col>
+    </v-row>
+  </v-toolbar>
+  <v-toolbar color="primary" height="30">
     <v-btn density="compact"
       >File
       <v-menu activator="parent">
         <v-list>
           <v-list-item density="compact">
             <v-list-item-title @click="saveChanges">Save</v-list-item-title>
+          </v-list-item>
+          <v-list-item density="compact">
+            <v-list-item-title @click="deleteDocument()"
+              >Delete</v-list-item-title
+            >
           </v-list-item>
         </v-list>
       </v-menu>
@@ -25,33 +43,55 @@
               >Rhyme, kid</v-list-item-title
             >
           </v-list-item>
+          <v-list-item density="compact">
+            <v-list-item-title
+              @click="showRhymeSchemeWindow = !showRhymeSchemeWindow"
+              >Show/hide rhyme scheme, kid</v-list-item-title
+            >
+          </v-list-item>
         </v-list>
       </v-menu>
     </v-btn>
   </v-toolbar>
+  <v-progress-linear v-if="isBusy" color="secondary" indeterminate />
   <v-row>
-    <!-- <v-card
-      elevation="5"
-      tile
-      min-height="450"
-      height="auto"
-      min-width="350"
-      width="auto"
-      color="primary"
-      class="mx-auto my-15"> -->
-    <v-container class="ma-10">
-      <v-textarea
-        v-model="content"
-        :model-value="content"
-        placeholder="Type something :)"
-        variant="solo"
-        auto-grow
-        tile
-        flat
-        density="comfortable"
-        elevation="0" />
-    </v-container>
-    <!-- </v-card> -->
+    <v-window
+      v-model="window"
+      class="mx-auto my-15 pa-0"
+      :show-arrows="showRhymeSchemeWindow ? 'hover' : false"
+      @update:model-value="window === 1 ? getRhymeScheme() : 'hello'">
+      <v-window-item>
+        <v-card
+          elevation="5"
+          tile
+          min-height="450"
+          height="auto"
+          min-width="500"
+          width="auto"
+          color="primary">
+          <v-container class="mx-0">
+            <v-textarea
+              v-model="content"
+              placeholder="Type something :)"
+              variant="solo"
+              tile
+              flat
+              density="comfortable"
+              elevation="0"
+              no-resize
+              auto-grow />
+          </v-container>
+        </v-card>
+      </v-window-item>
+      <v-window-item>
+        <v-card
+          class="d-flex justify-center align-center"
+          height="200px"
+          width="300">
+          {{ rhymeSchemeContent }}
+        </v-card>
+      </v-window-item>
+    </v-window>
   </v-row>
   <RhymDialog
     v-model:showModel="rhymDialog"
@@ -68,14 +108,24 @@ const modelValue = defineModel<{ id: number }>();
 const documentHeight = ref(0);
 const documentWidth = ref(0);
 const route = useRoute();
+const router = useRouter();
 const content = ref('');
 const title = ref('');
 const rhymDialog = ref(false);
-let documentId;
+let documentId: number;
 const userId = 1;
+const isBusy = ref(false);
+const window = ref(0);
+const showRhymeSchemeWindow = ref(false);
+const rhymeSchemeContent = ref('');
+
+const textAreaHeight = computed(() => {
+  // count new lines
+});
 
 try {
-  documentId = route.query.id as number;
+  let stringId = route.query.id as string;
+  documentId = parseInt(stringId);
   console.log(documentId);
   if (documentId < 0) {
     const url = 'document/addDocument';
@@ -86,6 +136,7 @@ try {
       Content: '',
     });
     title.value = response.data.title;
+    documentId = response.data.documentId;
   } else {
     const url = `document/getDocumentData?documentId=${documentId}`;
     const response = await Axios.get(url);
@@ -114,6 +165,32 @@ function appendWord(word: string) {
     word = ' ' + word;
   }
   content.value = content.value.concat(word.toLowerCase());
+}
+
+async function deleteDocument() {
+  try {
+    const url = `document/deleteDocument?documentId=${documentId}`;
+    const response = await Axios.post(url, {});
+    isBusy.value = true;
+    setTimeout(() => {
+      isBusy.value = false;
+      router.push('/');
+    }, 1000);
+  } catch (error) {
+    console.error('Error deleting document information', error);
+  }
+}
+
+async function getRhymeScheme() {
+  try {
+    const url = 'word/poemPronunciation';
+    const response = await Axios.post(url, {
+      content: content.value,
+    });
+    rhymeSchemeContent.value = response.data;
+  } catch (error) {
+    console.error('Error getting rhyme scheme', error);
+  }
 }
 
 // function updateSize() {

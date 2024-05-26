@@ -10,6 +10,7 @@ public class DocumentService
 	private readonly AppDbContext _context;
 	private static object _changingDocumentLock = new();
 	private static object _addingDocumentLock = new();
+	private static object _deletingDocumentLock = new();
 	public DocumentService(AppDbContext context)
 	{
 		_context = context;
@@ -20,7 +21,7 @@ public class DocumentService
 		return await _context.Documents.Where(document => document.UserId == userId).ToListAsync();
 	}
 
-	public async Task<Document> AddDocumentAsync(DocumentDto request)
+	public async Task<Document> PostDocumentAsync(DocumentDto request)
 	{
 		Document? foundDocument = await _context.Documents.
 			Where(dbDocument => dbDocument.DocumentId == request.DocumentId).
@@ -50,7 +51,8 @@ public class DocumentService
 					_context.Documents.Add(addedDocument);
 					_context.SaveChanges();
 					return addedDocument;
-				} else
+				}
+				else
 				{
 					var foundDocumentData = _context.DocumentData.FirstOrDefault(documentData => documentData == foundDocument.DocumentData);
 					if (foundDocumentData is null)
@@ -70,7 +72,8 @@ public class DocumentService
 			lock (_changingDocumentLock)
 			{
 				var foundDocumentData = _context.DocumentData.FirstOrDefault(documentData => documentData == foundDocument.DocumentData);
-				if (foundDocumentData is null) {
+				if (foundDocumentData is null)
+				{
 					throw new InvalidOperationException("Invalid state: No DocumentData for the corresponding Document entity.");
 				}
 				foundDocumentData.Content = request.Content;
@@ -96,5 +99,30 @@ public class DocumentService
 			})
 			.FirstOrDefaultAsync();
 		return result;
+	}
+
+	public async Task<bool> DeleteDocumentAsync(int documentId)
+	{
+		var foundDocument = await _context.Documents.FirstOrDefaultAsync(document => document.DocumentId == documentId);
+		if (foundDocument is not null)
+		{
+			lock (_deletingDocumentLock)
+			{
+				foundDocument = _context.Documents.Include(document => document.DocumentData).FirstOrDefault(document => document.DocumentId == documentId);
+				if (foundDocument is not null)
+				{
+					_context.Documents.Remove(foundDocument);
+					var documentData = foundDocument.DocumentData;
+					if (documentData is not null)
+					{
+						_context.DocumentData.Remove(documentData);
+					}
+					_context.SaveChanges();
+					return true;
+				}
+				return false;
+			}
+		}
+		return false;
 	}
 }

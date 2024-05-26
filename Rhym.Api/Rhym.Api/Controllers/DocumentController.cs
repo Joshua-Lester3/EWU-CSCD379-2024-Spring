@@ -25,12 +25,18 @@ public class DocumentController : ControllerBase
 	[HttpPost("AddDocument")]
 	public async Task<Document> AddDocumentAsync(DocumentDto dto)
 	{
-		return await _service.AddDocumentAsync(dto);
+		return await _service.PostDocumentAsync(dto);
 	}
 
 	[HttpGet("GetDocumentData")]
 	public async Task<DocumentDto?> GetDocumentAsync(int documentId)
 	{
 		return await _service.GetDocumentDataAsync(documentId);
+	}
+
+	[HttpPost("DeleteDocument")]
+	public async Task<bool> DeleteDocumentAsync(int documentId)
+	{
+		return await _service.DeleteDocumentAsync(documentId);
 	}
 }

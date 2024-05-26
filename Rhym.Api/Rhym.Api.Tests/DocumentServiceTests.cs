@@ -35,7 +35,7 @@ public class DocumentServiceTests : DatabaseTestBase
 		};
 
 		// Act
-		Document document = await _documentService.AddDocumentAsync(request);
+		Document document = await _documentService.PostDocumentAsync(request);
 
 		// Assert
 		Assert.AreEqual(1, document.UserId);
@@ -58,8 +58,8 @@ public class DocumentServiceTests : DatabaseTestBase
 			Title = "Super duper title 2",
 			Content = "This doc is super duper times two!"
 		};
-		await _documentService.AddDocumentAsync(requestOne);
-		await _documentService.AddDocumentAsync(requestTwo);
+		await _documentService.PostDocumentAsync(requestOne);
+		await _documentService.PostDocumentAsync(requestTwo);
 
 		// Act
 		List<Document> documents = await _documentService.GetDocumentListAsync(1);
