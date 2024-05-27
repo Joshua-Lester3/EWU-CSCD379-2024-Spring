@@ -43,9 +43,8 @@
 </template>
 
 <script setup lang="ts">
-import { AlgorithmType } from '~/scripts/rhymeUtils';
 import Axios from 'axios';
-import { RhymeUtils } from '~/scripts/rhymeUtils';
+import { RhymeUtils, AlgorithmType } from '~/scripts/rhymeUtils';
 
 const emit = defineEmits(['appendWord']);
 

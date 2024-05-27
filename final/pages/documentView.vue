@@ -85,10 +85,25 @@
       </v-window-item>
       <v-window-item>
         <v-card
-          class="d-flex justify-center align-center"
-          height="200px"
-          width="300">
-          {{ rhymeSchemeContent }}
+          elevation="5"
+          tile
+          min-height="450"
+          height="auto"
+          min-width="500"
+          width="auto"
+          color="primary">
+          <v-container class="mx-0">
+            <v-textarea
+              v-model="rhymeSchemeContent"
+              variant="solo"
+              tile
+              flat
+              density="comfortable"
+              elevation="0"
+              no-resize
+              auto-grow
+              disabled />
+          </v-container>
         </v-card>
       </v-window-item>
     </v-window>
@@ -101,6 +116,7 @@
 
 <script setup lang="ts">
 import Axios from 'axios';
+import { RhymeUtils } from '~/scripts/rhymeUtils';
 import { useTheme } from 'vuetify';
 
 const theme = useTheme();
@@ -183,11 +199,13 @@ async function deleteDocument() {
 
 async function getRhymeScheme() {
   try {
+    isBusy.value = true;
     const url = 'word/poemPronunciation';
     const response = await Axios.post(url, {
       content: content.value,
     });
     rhymeSchemeContent.value = response.data;
+    isBusy.value = false;
   } catch (error) {
     console.error('Error getting rhyme scheme', error);
   }

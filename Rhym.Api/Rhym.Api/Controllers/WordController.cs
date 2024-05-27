@@ -29,10 +29,10 @@ public class WordController
 		return await _service.GetPhonemes(word);
 	}
 
-	[HttpPost("PoemPronunciation")]
-	public async Task<string> GetPoemPronunciation(DocumentDataDto poem)
+	[HttpPost("PoemPronunciationPretty")]
+	public async Task<string> GetPoemPronunciationPretty(DocumentDataDto poem)
 	{
-		var lines = poem.Content.Split(Environment.NewLine);
+		var lines = poem.Content.Split('\n');
 		var wordsByLine = new List<List<string>>();
 		foreach (string line in lines)
 		{
@@ -59,6 +59,58 @@ public class WordController
 				poemPronunciation += "[ ";
 				poemPronunciation += String.Join(" - ", pronunciation);
 				poemPronunciation += " ]  ";
+			}
+			poemPronunciation = poemPronunciation.Trim();
+			poemPronunciation += "\n";
+		}
+		return poemPronunciation;
+	}
+
+	[HttpPost("PoemPronunciation")]
+	public async Task<string> GetPoemPronunciation(DocumentDataDto poem)
+	{
+		var lines = poem.Content.Split('\n');
+		var wordsByLine = new List<List<string>>();
+		foreach (string line in lines)
+		{
+			var wordsInLine = line.Split(' ').ToList();
+			wordsByLine.Add(wordsInLine);
+		}
+		var pronunciations = new List<List<string[]>>();
+		foreach (List<string> lineOfWords in wordsByLine)
+		{
+			List<string[]> addedLineOfPronunciations = new();
+			pronunciations.Add(addedLineOfPronunciations);
+			foreach (string word in lineOfWords)
+			{
+				var pronunciation = (await _service.GetSyllables(word));
+				addedLineOfPronunciations.Add(pronunciation);
+			}
+		}
+
+		string poemPronunciation = "";
+		foreach (List<string[]> lineOfPronunciations in pronunciations)
+		{
+			foreach (string[] syllablesInWord in lineOfPronunciations)
+			{
+				var word = "";
+				foreach (string syllable in syllablesInWord)
+				{
+					var syllables = syllable.Split(' ');
+					var phonemes = new List<string>();
+					foreach (string phoneme in syllables)
+					{
+						var phonemeShortened = phoneme;
+						if (phonemeShortened.Length > 2)
+						{
+							phonemeShortened = phonemeShortened.Substring(0, 2);
+						}
+						phonemes.Add(phonemeShortened);
+
+					}
+					word += String.Join('-', phonemes) + ' ';
+				}
+				poemPronunciation += word;
 			}
 			poemPronunciation = poemPronunciation.Trim();
 			poemPronunciation += "\n";
