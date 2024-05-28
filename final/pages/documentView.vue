@@ -93,7 +93,14 @@
           width="auto"
           color="primary">
           <v-container class="mx-0">
-            <v-textarea
+            <template
+              v-for="(syllable, index) in rhymeSchemeColorContent"
+              :key="index">
+              <div :class="`bg-${syllable.color}`">
+                {{ syllable.syllable }}
+              </div>
+            </template>
+            <!-- <v-textarea
               v-model="rhymeSchemeContent"
               variant="solo"
               tile
@@ -102,7 +109,7 @@
               elevation="0"
               no-resize
               auto-grow
-              disabled />
+              disabled /> -->
           </v-container>
         </v-card>
       </v-window-item>
@@ -116,7 +123,7 @@
 
 <script setup lang="ts">
 import Axios from 'axios';
-import { RhymeUtils } from '~/scripts/rhymeUtils';
+import { RhymeUtils, Syllable } from '~/scripts/rhymeUtils';
 import { useTheme } from 'vuetify';
 
 const theme = useTheme();
@@ -134,6 +141,8 @@ const isBusy = ref(false);
 const window = ref(0);
 const showRhymeSchemeWindow = ref(false);
 const rhymeSchemeContent = ref('');
+const rhymeSchemeColorContent = ref<Syllable[]>([]);
+const utils = new RhymeUtils();
 
 const textAreaHeight = computed(() => {
   // count new lines
@@ -205,6 +214,8 @@ async function getRhymeScheme() {
       content: content.value,
     });
     rhymeSchemeContent.value = response.data;
+    rhymeSchemeColorContent.value = utils.runAlgorithm(response.data);
+    debugger;
     isBusy.value = false;
   } catch (error) {
     console.error('Error getting rhyme scheme', error);

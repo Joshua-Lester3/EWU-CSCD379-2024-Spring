@@ -63,11 +63,14 @@ export class RhymeUtils {
     return textarea.substring(spaceIndex, newlineIndex);
   }
 
-  public runAlgorithm(poemPronunciation: string) {
+  public runAlgorithm(poemPronunciation: string): Array<Syllable> {
     let syllables: Array<string> = this.parseSyllables(poemPronunciation);
     this.mapper = new Array<number>(syllables.length)
       .fill(0)
       .map(() => new Array<number>(syllables.length).fill(0));
+    let rhymeCountMapper = new Array<number>(syllables.length)
+      .fill(0)
+      .map(() => new Array<number>());
 
     // Make sure syllables don't rhyme with theirself
     for (let index = 0; index < syllables.length; index++) {
@@ -81,6 +84,9 @@ export class RhymeUtils {
             syllables[outerIndex],
             syllables[innerIndex]
           );
+          if (score > 0) {
+            rhymeCountMapper[outerIndex].push(innerIndex);
+          }
           this.mapper[outerIndex][innerIndex] = score;
           this.mapper[innerIndex][outerIndex] = score;
         }
@@ -88,9 +94,22 @@ export class RhymeUtils {
     }
 
     let result = new Array<Syllable>();
+    let colorIndex = 0;
     for (let index = 0; index < syllables.length; index++) {
-      let syllable = this.mapper[0][index];
+      let color = '';
+      let syllableString = syllables[index];
+      if (rhymeCountMapper[index].length > 0) {
+        if (index < rhymeCountMapper[index][0]) {
+          color = this.colors[colorIndex];
+          colorIndex++;
+        } else {
+          color = result[rhymeCountMapper[index][0]].color;
+        }
+      }
+      let syllable = new Syllable(syllableString, color);
+      result.push(syllable);
     }
+    return result;
   }
 
   public parseSyllables(poemPronunciation: string) {
@@ -112,14 +131,15 @@ export class RhymeUtils {
     let foundVowelIndexes = this.hasSameVowel(phonemesOne, phonemesTwo);
     if (foundVowelIndexes.exists) {
       score += 1;
-      if (
-        phonemesOne.length > foundVowelIndexes.indexOne + 1 &&
-        phonemesTwo.length > foundVowelIndexes.indexTwo + 1 &&
-        phonemesOne[foundVowelIndexes.indexOne + 1] ===
-          phonemesTwo[foundVowelIndexes.indexTwo + 1]
-      ) {
-        score += 5.5;
-      }
+      // Commenting "consonant-after check" approach out. Videos I'm taking interpretation from are using only vowels and I want to model it after that for now.
+      // if (
+      //   phonemesOne.length > foundVowelIndexes.indexOne + 1 &&
+      //   phonemesTwo.length > foundVowelIndexes.indexTwo + 1 &&
+      //   phonemesOne[foundVowelIndexes.indexOne + 1] ===
+      //     phonemesTwo[foundVowelIndexes.indexTwo + 1]
+      // ) {
+      //   score += 5.5;
+      // }
     }
 
     return score;
@@ -153,7 +173,7 @@ export class RhymeUtils {
   }
 }
 
-class Syllable {
+export class Syllable {
   public syllable: string;
   public color: string;
 
