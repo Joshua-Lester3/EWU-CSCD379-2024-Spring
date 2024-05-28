@@ -96,9 +96,10 @@
             <template
               v-for="(syllable, index) in rhymeSchemeColorContent"
               :key="index">
-              <div :class="`bg-${syllable.color}`">
-                {{ syllable.syllable }}
-              </div>
+              <span :class="`bg-${syllable.color}`">{{
+                syllable.syllable
+              }}</span>
+              <span>&ensp;</span>
             </template>
             <!-- <v-textarea
               v-model="rhymeSchemeContent"
@@ -143,6 +144,7 @@ const showRhymeSchemeWindow = ref(false);
 const rhymeSchemeContent = ref('');
 const rhymeSchemeColorContent = ref<Syllable[]>([]);
 const utils = new RhymeUtils();
+const space = ' ';
 
 const textAreaHeight = computed(() => {
   // count new lines
