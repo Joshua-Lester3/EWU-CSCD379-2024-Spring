@@ -3,6 +3,7 @@
 - fix grid on index.vue
 - make grid responsive
 - add about page/presentation on project
+- great idea: implement signalR so people can play game where one does a bar, then another person does a bar
 
 ### ideas:
 
