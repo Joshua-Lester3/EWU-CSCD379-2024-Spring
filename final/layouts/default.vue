@@ -16,8 +16,8 @@
     </v-app-bar>
     <v-navigation-drawer location="right" width="150" v-model="drawer">
       <v-list>
-        <v-list-item @click="$router.push('/')">
-          <v-icon>mdi-home</v-icon> Home
+        <v-list-item @click="$router.push('/documentHub')">
+          <v-icon>mdi-home</v-icon> Hub
         </v-list-item>
         <v-list-item @click="settingsDialog = !settingsDialog"
           ><v-icon> mdi-cog</v-icon> Settings</v-list-item

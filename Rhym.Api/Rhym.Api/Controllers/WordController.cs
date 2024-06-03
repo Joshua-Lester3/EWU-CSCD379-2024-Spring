@@ -67,7 +67,7 @@ public class WordController
 	}
 
 	[HttpPost("PoemPronunciation")]
-	public async Task<string> GetPoemPronunciation(DocumentDataDto poem)
+	public async Task<PoemPair> GetPoemPronunciation(DocumentDataDto poem)
 	{
 		var lines = poem.Content.Split('\n');
 		var wordsByLine = new List<List<string>>();
@@ -77,12 +77,14 @@ public class WordController
 			wordsByLine.Add(wordsInLine);
 		}
 		var pronunciations = new List<List<string[]>>();
+		var words = "";
 		foreach (List<string> lineOfWords in wordsByLine)
 		{
 			List<string[]> addedLineOfPronunciations = new();
 			pronunciations.Add(addedLineOfPronunciations);
 			foreach (string word in lineOfWords)
 			{
+				words += word + " ";
 				var pronunciation = (await _service.GetSyllables(word));
 				addedLineOfPronunciations.Add(pronunciation);
 			}
@@ -110,17 +112,23 @@ public class WordController
 					}
 					word += String.Join('-', phonemes) + ' ';
 				}
-				poemPronunciation += word;
+				poemPronunciation += word + "/ ";
 			}
 			poemPronunciation = poemPronunciation.Trim();
 			poemPronunciation += "\n";
 		}
-		return poemPronunciation;
+		return new PoemPair() { Pronunciation = poemPronunciation, Poem = words.TrimEnd() };
 	}
 
 	[HttpGet("ImperfectRhyme")]
 	public async Task<List<string>> GetImperfectRhymes(string phonemesString)
 	{
 		return await _service.GetImperfectRhymes(phonemesString);
+	}
+
+	[HttpGet("PronunciationToPlain")]
+	public async Task<List<string>> GetPronunciationToPlain(string word)
+	{
+		return await _service.GetPronunciationToPlain(word);
 	}
 }

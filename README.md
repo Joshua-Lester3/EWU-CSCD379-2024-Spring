@@ -1,3 +1,15 @@
+### feats:
+
+- make color coded scheme plain english
+- wordEditor (add, search)
+- Login (Microsoft Identity)
+- Shared documents (edit tables + signalR)
+-
+
+#### possible feats:
+
+- assign points to each player's rhyme
+
 ### To do:
 
 - fix grid on index.vue

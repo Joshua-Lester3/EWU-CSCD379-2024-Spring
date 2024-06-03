@@ -17,10 +17,10 @@ public class WordServiceTests : DatabaseTestBase
 	{
 		_context = new AppDbContext(Options);
 		_service = new(_context);
-		await _context.Words.AddAsync(new Word { WordKey = "ABET", Phonemes = ["AH0", "B", "EH1", "T"], Syllables = ["AH0", "B EH1 T"] });
-		await _context.Words.AddAsync(new Word { WordKey = "BABETTE", Phonemes = ["B", "AH0", "B", "EH1", "T"], Syllables = ["B AH0", "B EH1 T"] });
-		await _context.Words.AddAsync(new Word { WordKey = "BET", Phonemes =[ "B", "EH1", "T"], Syllables = ["B EH1 T"] });
-		await _context.Words.AddAsync(new Word { WordKey = "BETA", Phonemes = ["B", "EY1", "T", "AH0"], Syllables = ["B EY1", "T AH0"] });
+		await _context.Words.AddAsync(new Word { WordKey = "ABET", Phonemes = ["AH0", "B", "EH1", "T"], SyllablesPronunciation = ["AH0", "B EH1 T"] });
+		await _context.Words.AddAsync(new Word { WordKey = "BABETTE", Phonemes = ["B", "AH0", "B", "EH1", "T"], SyllablesPronunciation = ["B AH0", "B EH1 T"] });
+		await _context.Words.AddAsync(new Word { WordKey = "BET", Phonemes =[ "B", "EH1", "T"], SyllablesPronunciation = ["B EH1 T"] });
+		await _context.Words.AddAsync(new Word { WordKey = "BETA", Phonemes = ["B", "EY1", "T", "AH0"], SyllablesPronunciation = ["B EY1", "T AH0"] });
 		await _context.SaveChangesAsync();
 	}
 

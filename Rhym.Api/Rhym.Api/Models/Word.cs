@@ -4,7 +4,7 @@ namespace Rhym.Api.Models;
 
 public class Word
 {
-	public int Id { get; set; }
+	public int WordId { get; set; }
 
 	[Required]
 	public required string WordKey { get; set; }
@@ -13,5 +13,6 @@ public class Word
 	public required string[] Phonemes { get; set; }
 
 	[Required]
-	public required string[] Syllables { get; set; }
+	public required string[] SyllablesPronunciation { get; set; }
+	public Syllable? Syllable { get; set; }
 }

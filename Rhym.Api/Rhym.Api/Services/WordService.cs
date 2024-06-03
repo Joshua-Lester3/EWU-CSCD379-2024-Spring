@@ -80,7 +80,7 @@ public class WordService
 	public async Task<string[]> GetSyllables(string givenWord)
 	{
 		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
-		return foundWord?.Syllables ?? [givenWord]; // Return given word if not found
+		return foundWord?.SyllablesPronunciation ?? [givenWord]; // Return given word if not found
 	}
 
 	public async Task<List<string>> GetImperfectRhymes(string phonemesString)
@@ -108,6 +108,17 @@ public class WordService
 			.ToList();
 
 		return result;
+	}
+
+	public async Task<List<string>> GetPronunciationToPlain(string word)
+	{
+		word = word.Trim().ToUpper();
+		var foundSyllables = await _context.Syllables.FirstOrDefaultAsync(syllables => syllables.Word.Equals(word));
+		if (foundSyllables == null)
+		{
+			return [];
+		}
+		return foundSyllables.Syllables.ToList();
 	}
 
 	public List<string> Vowels = new List<string>

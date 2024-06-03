@@ -89,28 +89,22 @@
           tile
           min-height="450"
           height="auto"
-          min-width="500"
+          max-width="450"
           width="auto"
           color="primary">
           <v-container class="mx-0">
             <template
-              v-for="(syllable, index) in rhymeSchemeColorContent"
-              :key="index">
-              <span :class="`bg-${syllable.color}`">{{
-                syllable.syllable
-              }}</span>
+              v-for="(word, outerIndex) in rhymeSchemeColorContent"
+              :key="outerIndex">
+              <template
+                v-for="(syllable, innerIndex) in word.syllables"
+                :key="innerIndex"
+                ><span :class="`bg-${syllable.color}`">{{
+                  syllable.syllable
+                }}</span></template
+              >
               <span>&ensp;</span>
             </template>
-            <!-- <v-textarea
-              v-model="rhymeSchemeContent"
-              variant="solo"
-              tile
-              flat
-              density="comfortable"
-              elevation="0"
-              no-resize
-              auto-grow
-              disabled /> -->
           </v-container>
         </v-card>
       </v-window-item>
@@ -124,7 +118,7 @@
 
 <script setup lang="ts">
 import Axios from 'axios';
-import { RhymeUtils, Syllable } from '~/scripts/rhymeUtils';
+import { RhymeUtils, Word, Syllable } from '~/scripts/rhymeUtils';
 import { useTheme } from 'vuetify';
 
 const theme = useTheme();
@@ -142,7 +136,7 @@ const isBusy = ref(false);
 const window = ref(0);
 const showRhymeSchemeWindow = ref(false);
 const rhymeSchemeContent = ref('');
-const rhymeSchemeColorContent = ref<Syllable[]>([]);
+const rhymeSchemeColorContent = ref<Word[]>([]);
 const utils = new RhymeUtils();
 const space = ' ';
 
@@ -216,8 +210,10 @@ async function getRhymeScheme() {
       content: content.value,
     });
     rhymeSchemeContent.value = response.data;
-    rhymeSchemeColorContent.value = utils.runAlgorithm(response.data);
-    debugger;
+    rhymeSchemeColorContent.value = await utils.runAlgorithm(
+      response.data.pronunciation,
+      response.data.poem
+    );
     isBusy.value = false;
   } catch (error) {
     console.error('Error getting rhyme scheme', error);
