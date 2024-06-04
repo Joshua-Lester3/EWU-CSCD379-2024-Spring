@@ -131,4 +131,16 @@ public class WordController
 	{
 		return await _service.GetPronunciationToPlain(word);
 	}
+
+	[HttpPost("AddWord")]
+	public async Task<bool> PostWord(WordDto dto)
+	{
+		return await _service.AddWord(dto);
+	}
+
+	[HttpGet("WordListPaginated")]
+	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber)
+	{
+		return await _service.GetWordListPaginated(countPerPage, pageNumber);
+	}
 }

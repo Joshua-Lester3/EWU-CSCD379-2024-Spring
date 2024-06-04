@@ -6,10 +6,11 @@ public class Syllable
 {
 	public int SyllableId { get; set; }
 	[Required]
-	public required string Word { get; set; }
+	public required string WordKey { get; set; }
 	[Required]
-	public required int WordId {  get; set; }
+	public int WordId {  get; set; }
+	public Word? Word { get; set; }
 	[Required]
-	public required string[] Syllables { get; set; }
+	public required string[] PlainTextSyllables { get; set; }
 
 }

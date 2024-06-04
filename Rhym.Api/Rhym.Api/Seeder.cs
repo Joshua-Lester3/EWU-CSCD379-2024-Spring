@@ -80,8 +80,8 @@ public class Seeder
 					{
 						Syllable syllable = new Syllable
 						{
-							Word = word,
-							Syllables = syllables,
+							WordKey = word,
+							PlainTextSyllables = syllables,
 							WordId = foundWord.WordId,
 						};
 						await db.Syllables.AddAsync(syllable);

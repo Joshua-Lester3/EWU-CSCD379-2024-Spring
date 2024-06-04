@@ -14,13 +14,17 @@
       >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
     </v-app-bar>
-    <v-navigation-drawer location="right" width="150" v-model="drawer">
+    <v-navigation-drawer location="right" width="175" v-model="drawer">
       <v-list>
         <v-list-item @click="$router.push('/documentHub')">
           <v-icon>mdi-home</v-icon> Hub
         </v-list-item>
         <v-list-item @click="settingsDialog = !settingsDialog"
           ><v-icon> mdi-cog</v-icon> Settings</v-list-item
+        >
+        <v-list-item @click="$router.push('/wordList')"
+          ><v-icon> mdi-book-open-blank-variant-outline</v-icon>
+          Editor</v-list-item
         >
       </v-list>
     </v-navigation-drawer>

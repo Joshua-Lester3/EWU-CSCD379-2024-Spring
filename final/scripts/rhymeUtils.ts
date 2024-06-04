@@ -46,7 +46,15 @@ export class RhymeUtils {
     'ZH',
   ];
 
-  public colors: Array<string> = ['red', 'blue', 'green', 'pink'];
+  public colors: Array<string> = [
+    'red',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'yellow',
+    'orange',
+  ];
 
   public mapper: Array<Array<number>> = new Array<Array<number>>();
 
@@ -101,7 +109,6 @@ export class RhymeUtils {
         }
       }
     }
-    debugger;
 
     let result = new Array<Syllable>();
     let colorIndex = 0;
@@ -133,9 +140,6 @@ export class RhymeUtils {
     for (let i = 0; i < words.length; i++) {
       let word = words[i];
       let plainTextWord = poemWords[i];
-      if (plainTextWord === 'mean') {
-        debugger;
-      }
       let plainTextSyllables: string[] = [];
       try {
         let url = `word/pronunciationToPlain?word=${plainTextWord}`;

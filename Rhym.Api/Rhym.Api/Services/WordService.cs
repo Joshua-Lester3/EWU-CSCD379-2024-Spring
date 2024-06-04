@@ -1,6 +1,10 @@
-﻿using System.Security.Cryptography;
+﻿using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Rhym.Api.Data;
+using Rhym.Api.Dtos;
 using Rhym.Api.Models;
 
 namespace Rhym.Api.Services;
@@ -113,12 +117,70 @@ public class WordService
 	public async Task<List<string>> GetPronunciationToPlain(string word)
 	{
 		word = word.Trim().ToUpper();
-		var foundSyllables = await _context.Syllables.FirstOrDefaultAsync(syllables => syllables.Word.Equals(word));
+		var foundSyllables = await _context.Syllables.FirstOrDefaultAsync(syllables => syllables.WordKey.Equals(word));
 		if (foundSyllables == null)
 		{
 			return [];
 		}
-		return foundSyllables.Syllables.ToList();
+		return foundSyllables.PlainTextSyllables.ToList();
+	}
+
+	public async Task<bool> AddWord(WordDto dto)
+	{
+		if (dto.Word.IsNullOrEmpty() || dto.SyllablesPronunciation.Length == 0 || dto.Phonemes.Length == 0 || dto.PlainTextSyllables.Length == 0)
+		{
+			throw new ArgumentException("Invalid arguments. All arrays must have at least one element and Word must not be null or empty.");
+		}
+		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(dto.Word.ToLower()));
+		if (foundWord is not null)
+		{
+			return false;
+		}
+
+		Word word = new Word
+		{
+			WordKey = dto.Word,
+			Phonemes = dto.Phonemes,
+			SyllablesPronunciation = dto.SyllablesPronunciation,
+		};
+		await _context.Words.AddAsync(word);
+		await _context.SaveChangesAsync();
+
+
+		Syllable syllable = new Syllable
+		{
+			WordKey = dto.Word,
+			PlainTextSyllables = dto.PlainTextSyllables,
+			WordId = word.WordId,
+		};
+
+		await _context.Syllables.AddAsync(syllable);
+		await _context.SaveChangesAsync();
+
+		return true;
+	}
+
+	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber)
+	{
+		var words = await _context.Words
+			.OrderBy(word => word.WordKey.ToLower())
+			.Skip(pageNumber * countPerPage)
+			.Take(countPerPage)
+			.Include(word => word.Syllable)
+			.Select(word => new WordDto
+			{
+				Word = word.WordKey,
+				Phonemes = word.Phonemes,
+				SyllablesPronunciation = word.SyllablesPronunciation,
+				PlainTextSyllables = word.Syllable!.PlainTextSyllables, // Syllable should never be null here
+			})
+			.ToListAsync();
+		PaginatedWordsDto result = new PaginatedWordsDto
+		{
+			Words = words,
+			Pages = await _context.Words.CountAsync()
+		};
+		return result;
 	}
 
 	public List<string> Vowels = new List<string>
