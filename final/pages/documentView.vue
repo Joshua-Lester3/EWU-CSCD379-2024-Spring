@@ -1,18 +1,12 @@
 <template>
-  <v-toolbar class="mt-5" height="50">
-    <v-icon
-      class="ml-5 mr-2"
-      @click="$router.push('/')"
-      :color="theme.global.name.value === 'dark' ? 'secondary' : ''"
-      >mdi-book-open-blank-variant</v-icon
-    >
+  <v-toolbar height="50">
     <v-row>
       <v-col cols="6">
         <v-text-field
           v-model="title"
           density="compact"
           variant="solo"
-          class="mt-5"
+          class="mt-5 ml-1"
           bg-color="secondary"
           flat />
       </v-col>

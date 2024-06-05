@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <v-app-bar :color="theme.global.name.value === 'dark' ? '' : 'secondary'">
+    <v-app-bar
+      class="elevation-0"
+      :color="theme.global.name.value === 'dark' ? '' : 'secondary'">
       <template v-slot:prepend>
         <v-icon
           class="ml-5 mr-2"

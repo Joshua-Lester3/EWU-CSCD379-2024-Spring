@@ -1,18 +1,7 @@
-<v-progress-linear v-if="isLoading" color="secondary" indeterminate />
+<template>
+  <NuxtLayout>
+    <v-progress-linear v-if="isLoading" color="secondary" indeterminate />
     <v-card class="ma-10">
-      <v-row>
-        <v-col cols="6">
-          <v-select
-            label="Words per page"
-            :items="[10, 25, 50, 100]"
-            v-model="countPerPage"
-            @update:model-value="getWords"
-            class="w-50 my-5 ml-9"></v-select>
-        </v-col>
-        <v-col>
-          <v-btn class="mt-9" color="secondary">Add word</v-btn>
-        </v-col>
-      </v-row>
       <v-table>
         <thead>
           <tr>
@@ -25,14 +14,48 @@
             <td class="text-center">{{ word.word }}</td>
             <td class="text-center">{{ word.syllablesPronunciation }}</td>
           </tr>
-          <tr v-if="words.length === 0">
-            <td class="text-center">No words!</td>
-          </tr>
         </tbody>
       </v-table>
       <v-pagination
         v-model="page"
-        :length="length"
+        :length
         rounded="circle"
-        @update:modelValue="getWords" />
+        @update:modelValue="setWords" />
     </v-card>
+  </NuxtLayout>
+</template>
+
+<script setup lang="ts">
+import Axios from 'axios';
+
+const isLoading = ref(true);
+const countPerPage = ref(25);
+const page = ref(1);
+const words = ref<Array<WordDto>>([]);
+const length = ref(0);
+
+interface WordDto {
+  word: string;
+  phonemes: string[];
+  syllablesPronunciation: string[];
+  plainTextSyllables: string[];
+}
+
+onMounted(async () => {
+  await setWords();
+});
+
+async function setWords() {
+  try {
+    const url = `word/wordListPaginated?countPerPage=${
+      countPerPage.value
+    }&pageNumber=${page.value - 1}`;
+    const response = await Axios.get(url);
+    words.value = response.data.words;
+    length.value = response.data.pages;
+    isLoading.value = false;
+  } catch (error) {
+    console.error('Error getting word information', error);
+  }
+}
+</script>

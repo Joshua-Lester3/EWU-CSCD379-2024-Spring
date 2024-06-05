@@ -1,32 +1,41 @@
 <template>
-  <NuxtLayout>
-    <v-progress-linear v-if="isLoading" color="secondary" indeterminate />
-    <v-card class="ma-10">
-      <v-table>
-        <thead>
-          <tr>
-            <th class="text-center">Word</th>
-            <th class="text-center">Pronunciation</th>
-            <th class="text-center">Edit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(word, index) in words" :key="index">
-            <td class="text-center">{{ word.word }}</td>
-            <td class="text-center">{{ word.syllablesPronunciation }}</td>
-            <td class="text-center">
-              <v-btn>Holle</v-btn>
-            </td>
-          </tr>
-        </tbody>
-      </v-table>
-      <v-pagination
-        v-model="page"
-        :length
-        rounded="circle"
-        @update:modelValue="setWords" />
-    </v-card>
-  </NuxtLayout>
+  <v-progress-linear v-if="isLoading" color="secondary" indeterminate />
+  <v-card class="ma-10">
+    <v-row>
+      <v-col cols="5">
+        <v-select
+          class="ma-5"
+          width="50px"
+          :items="[10, 25, 50, 100]"
+          v-model="countPerPage"
+          label="Words per page"
+          @update:modelValue="setWords" />
+      </v-col>
+      <v-col class="ma-7" cols="3">
+        <v-btn color="secondary" @click="showAddRhyme = true">Add Rhyme</v-btn>
+      </v-col>
+    </v-row>
+    <v-table>
+      <thead>
+        <tr>
+          <th class="text-center text-h6">Word</th>
+          <th class="text-center text-h6">Pronunciation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(word, index) in words" :key="index">
+          <td class="text-center">{{ word?.word }}</td>
+          <td class="text-center">{{ word?.syllablesPronunciation }}</td>
+        </tr>
+      </tbody>
+    </v-table>
+    <v-pagination
+      v-model="page"
+      :length
+      rounded="circle"
+      @update:modelValue="setWords" />
+  </v-card>
+  <AddRhyme v-model="showAddRhyme" :syllablesPronunciation="['hello', 'hi']" />
 </template>
 
 <script setup lang="ts">
@@ -37,6 +46,7 @@ const countPerPage = ref(25);
 const page = ref(1);
 const words = ref<Array<WordDto>>([]);
 const length = ref(0);
+const showAddRhyme = ref(false);
 
 interface WordDto {
   word: string;
@@ -45,7 +55,11 @@ interface WordDto {
   plainTextSyllables: string[];
 }
 
-onMounted(async () => {
+onMounted(() => {
+  setWords();
+});
+
+async function setWords() {
   try {
     const url = `word/wordListPaginated?countPerPage=${
       countPerPage.value
@@ -55,7 +69,7 @@ onMounted(async () => {
     length.value = response.data.pages;
     isLoading.value = false;
   } catch (error) {
-    console.error('Error deleting document information', error);
+    console.error('Error getting word information', error);
   }
-});
+}
 </script>

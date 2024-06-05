@@ -1,33 +1,31 @@
 <template>
-  <NuxtLayout>
-    <v-app>
-      <v-container class="text-center">
-        <v-btn
-          size="70"
-          elevation="2"
-          @click="$router.push('/documentView?id=-1')"
-          icon="mdi-plus"></v-btn>
-      </v-container>
-      <v-container>
-        <v-row>
-          <v-col
-            class="my-4"
-            align="center"
-            cols="4"
-            v-for="document in documents"
-            :key="document.documentId">
-            <v-card
-              @click="$router.push(`/documentView?id=${document.documentId}`)"
-              height="200"
-              width="150"
-              elevation="2"
-              >{{ document.title }}</v-card
-            >
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app>
-  </NuxtLayout>
+  <v-app>
+    <v-container class="text-center">
+      <v-btn
+        size="70"
+        elevation="2"
+        @click="$router.push('/documentView?id=-1')"
+        icon="mdi-plus"></v-btn>
+    </v-container>
+    <v-container>
+      <v-row>
+        <v-col
+          class="my-4"
+          align="center"
+          cols="4"
+          v-for="document in documents"
+          :key="document.documentId">
+          <v-card
+            @click="$router.push(`/documentView?id=${document.documentId}`)"
+            height="200"
+            width="150"
+            elevation="2"
+            >{{ document.title }}</v-card
+          >
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-app>
 </template>
 
 <script setup lang="ts">
