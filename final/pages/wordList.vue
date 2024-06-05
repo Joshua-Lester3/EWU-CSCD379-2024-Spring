@@ -20,7 +20,11 @@
           </tr>
         </tbody>
       </v-table>
-      <v-pagination v-model="page" :length="4" rounded="circle"></v-pagination>
+      <v-pagination
+        v-model="page"
+        :length
+        rounded="circle"
+        @update:modelValue="setWords" />
     </v-card>
   </NuxtLayout>
 </template>

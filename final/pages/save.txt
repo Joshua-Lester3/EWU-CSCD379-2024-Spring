@@ -1,0 +1,38 @@
+<v-progress-linear v-if="isLoading" color="secondary" indeterminate />
+    <v-card class="ma-10">
+      <v-row>
+        <v-col cols="6">
+          <v-select
+            label="Words per page"
+            :items="[10, 25, 50, 100]"
+            v-model="countPerPage"
+            @update:model-value="getWords"
+            class="w-50 my-5 ml-9"></v-select>
+        </v-col>
+        <v-col>
+          <v-btn class="mt-9" color="secondary">Add word</v-btn>
+        </v-col>
+      </v-row>
+      <v-table>
+        <thead>
+          <tr>
+            <th class="text-center">Word</th>
+            <th class="text-center">Pronunciation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(word, index) in words" :key="index">
+            <td class="text-center">{{ word.word }}</td>
+            <td class="text-center">{{ word.syllablesPronunciation }}</td>
+          </tr>
+          <tr v-if="words.length === 0">
+            <td class="text-center">No words!</td>
+          </tr>
+        </tbody>
+      </v-table>
+      <v-pagination
+        v-model="page"
+        :length="length"
+        rounded="circle"
+        @update:modelValue="getWords" />
+    </v-card>

@@ -96,5 +96,26 @@ public class Seeder
 				Console.WriteLine("FileNotFoundException: " + e.Message);
 			}
 		}
+
+		if (!db.Rhymes.Any())
+		{
+			var syllables = await db.Syllables.Include(syllable => syllable.Word).ToListAsync();
+			foreach (Syllable syllable in syllables)
+			{
+				if (syllable.Word != null)
+				{
+					Rhyme rhyme = new Rhyme
+					{
+						Word = syllable.WordKey,
+						Phonemes = syllable.Word.Phonemes,
+						SyllablesPronunciation = syllable.Word.SyllablesPronunciation,
+						PlainTextSyllables = syllable.PlainTextSyllables,
+					};
+					await db.Rhymes.AddAsync(rhyme);
+				}
+			}
+			await db.SaveChangesAsync();
+			// get syllables from syllables table and add to main table - Rhymes
+		}
 	}
 }

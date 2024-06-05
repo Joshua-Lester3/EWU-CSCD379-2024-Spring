@@ -162,23 +162,22 @@ public class WordService
 
 	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber)
 	{
-		var words = await _context.Words
-			.OrderBy(word => word.WordKey.ToLower())
+		var words = await _context.Rhymes
+			.OrderBy(rhyme => rhyme.Word.ToLower())
 			.Skip(pageNumber * countPerPage)
 			.Take(countPerPage)
-			.Include(word => word.Syllable)
-			.Select(word => new WordDto
+			.Select(rhyme => new WordDto
 			{
-				Word = word.WordKey,
-				Phonemes = word.Phonemes,
-				SyllablesPronunciation = word.SyllablesPronunciation,
-				PlainTextSyllables = word.Syllable!.PlainTextSyllables, // Syllable should never be null here
+				Word = rhyme.Word,
+				Phonemes = rhyme.Phonemes,
+				SyllablesPronunciation = rhyme.SyllablesPronunciation,
+				PlainTextSyllables = rhyme.PlainTextSyllables,
 			})
 			.ToListAsync();
 		PaginatedWordsDto result = new PaginatedWordsDto
 		{
 			Words = words,
-			Pages = await _context.Words.CountAsync()
+			Pages = await _context.Rhymes.CountAsync()
 		};
 		return result;
 	}

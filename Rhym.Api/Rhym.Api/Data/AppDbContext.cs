@@ -12,4 +12,5 @@ public class AppDbContext : DbContext
 	public DbSet<User> Users { get; set; }
 	public DbSet<Word> Words { get; set; }
 	public DbSet<Syllable> Syllables {  get; set; }
+	public DbSet<Rhyme> Rhymes { get; set; }
 }

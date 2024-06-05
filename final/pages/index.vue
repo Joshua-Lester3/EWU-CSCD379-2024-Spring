@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout>
     <v-app>
-      <v-container class="">
+      <v-container>
         <v-card min-height="300">
           <v-card-title> Home page </v-card-title>
           <v-btn
