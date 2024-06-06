@@ -1,6 +1,7 @@
 ### feats:
 
-- make color coded scheme plain english
+X make color coded scheme plain english
+
 - wordEditor (add, search)
 - Login (Microsoft Identity)
 - Shared documents (edit tables + signalR)

@@ -28,21 +28,21 @@ public class WordService
 		}
 		var foundWordPhonemes = foundWord.Phonemes.Reverse();
 
-		var result = (await _context.Words.ToListAsync())
-			.Where(word => FilterPerfectRhymes(word, givenWord, foundWordPhonemes))
-			.Select(word => word.WordKey)
+		var result = (await _context.Rhymes.ToListAsync())
+			.Where(rhyme => FilterPerfectRhymes(rhyme, givenWord, foundWordPhonemes))
+			.Select(rhyme => rhyme.Word)
 			.ToList();
 
 		return result;
 	}
 
-	public bool FilterPerfectRhymes(Word word, string givenWord, IEnumerable<string> foundWordPhonemes)
+	public bool FilterPerfectRhymes(Rhyme rhyme, string givenWord, IEnumerable<string> foundWordPhonemes)
 	{
-		if (word.WordKey.Equals(givenWord.ToUpper()))
+		if (rhyme.Word.Equals(givenWord.ToUpper()))
 		{
 			return false;
 		}
-		var pronunciation = word.Phonemes.Reverse();
+		var pronunciation = rhyme.Phonemes.Reverse();
 		var foundEnumerator = foundWordPhonemes.GetEnumerator();
 		var wordEnumerator = pronunciation.GetEnumerator();
 		foundEnumerator.MoveNext();
@@ -77,24 +77,24 @@ public class WordService
 
 	public async Task<string[]> GetPhonemes(string givenWord)
 	{
-		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
+		var foundWord = await _context.Rhymes.FirstOrDefaultAsync(word => word.Word.Equals(givenWord.ToUpper()));
 		return foundWord?.Phonemes ?? [givenWord]; // Return given word if not found
 	}
 
 	public async Task<string[]> GetSyllables(string givenWord)
 	{
-		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(givenWord.ToUpper()));
+		var foundWord = await _context.Rhymes.FirstOrDefaultAsync(word => word.Word.Equals(givenWord.ToUpper()));
 		return foundWord?.SyllablesPronunciation ?? [givenWord]; // Return given word if not found
 	}
 
 	public async Task<List<string>> GetImperfectRhymes(string phonemesString)
 	{
 		string[] phonemes = phonemesString.Split(' ');
-		var result = (await _context.Words.ToListAsync())
-			.Where(word =>
+		var result = (await _context.Rhymes.ToListAsync())
+			.Where(rhyme =>
 			{
 				int index = 0;
-				foreach (string dbSyllable in word.Phonemes)
+				foreach (string dbSyllable in rhyme.Phonemes)
 				{
 					if (index < phonemes.Length)
 					{
@@ -108,7 +108,7 @@ public class WordService
 				}
 				return index == phonemes.Length;
 			})
-			.Select(word => word.WordKey)
+			.Select(rhyme => rhyme.Word)
 			.ToList();
 
 		return result;
@@ -117,7 +117,7 @@ public class WordService
 	public async Task<List<string>> GetPronunciationToPlain(string word)
 	{
 		word = word.Trim().ToUpper();
-		var foundSyllables = await _context.Syllables.FirstOrDefaultAsync(syllables => syllables.WordKey.Equals(word));
+		var foundSyllables = await _context.Rhymes.FirstOrDefaultAsync(rhyme => rhyme.Word.Equals(word));
 		if (foundSyllables == null)
 		{
 			return [];
@@ -127,34 +127,40 @@ public class WordService
 
 	public async Task<bool> AddWord(WordDto dto)
 	{
-		if (dto.Word.IsNullOrEmpty() || dto.SyllablesPronunciation.Length == 0 || dto.Phonemes.Length == 0 || dto.PlainTextSyllables.Length == 0)
+		if (dto.Word.IsNullOrEmpty() || dto.SyllablesPronunciation.Length == 0 || dto.PlainTextSyllables.Length == 0 || dto.SyllablesPronunciation.Length != dto.PlainTextSyllables.Length)
 		{
 			throw new ArgumentException("Invalid arguments. All arrays must have at least one element and Word must not be null or empty.");
 		}
-		var foundWord = await _context.Words.FirstOrDefaultAsync(word => word.WordKey.Equals(dto.Word.ToLower()));
+		var foundWord = await _context.Rhymes.FirstOrDefaultAsync(rhyme => rhyme.Word.Equals(dto.Word.ToLower()));
 		if (foundWord is not null)
 		{
 			return false;
 		}
 
-		Word word = new Word
+		var phonemes = new List<string>();
+		for (int index = 0; index < dto.SyllablesPronunciation.Length; index++)
 		{
-			WordKey = dto.Word,
-			Phonemes = dto.Phonemes,
+			dto.SyllablesPronunciation[index] = dto.SyllablesPronunciation[index].ToUpper();
+			dto.PlainTextSyllables[index] = dto.PlainTextSyllables[index].ToUpper();
+		}
+		foreach (string pronunciationSyllable in dto.SyllablesPronunciation)
+		{
+			var splitSyllable = pronunciationSyllable.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			foreach (string phoneme in splitSyllable)
+			{
+				phonemes.Add(phoneme);
+			}
+		}
+
+		Rhyme rhyme = new Rhyme
+		{
+			Word = dto.Word.ToUpper(),
+			Phonemes = phonemes.ToArray(),
 			SyllablesPronunciation = dto.SyllablesPronunciation,
-		};
-		await _context.Words.AddAsync(word);
-		await _context.SaveChangesAsync();
-
-
-		Syllable syllable = new Syllable
-		{
-			WordKey = dto.Word,
-			PlainTextSyllables = dto.PlainTextSyllables,
-			WordId = word.WordId,
+			PlainTextSyllables = dto.PlainTextSyllables
 		};
 
-		await _context.Syllables.AddAsync(syllable);
+		await _context.Rhymes.AddAsync(rhyme);
 		await _context.SaveChangesAsync();
 
 		return true;
@@ -162,18 +168,16 @@ public class WordService
 
 	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber)
 	{
-		var words = await _context.Rhymes
+		var words = _context.Rhymes
 			.OrderBy(rhyme => rhyme.Word.ToLower())
 			.Skip(pageNumber * countPerPage)
 			.Take(countPerPage)
 			.Select(rhyme => new WordDto
 			{
 				Word = rhyme.Word,
-				Phonemes = rhyme.Phonemes,
 				SyllablesPronunciation = rhyme.SyllablesPronunciation,
 				PlainTextSyllables = rhyme.PlainTextSyllables,
-			})
-			.ToListAsync();
+			}).ToList();
 		PaginatedWordsDto result = new PaginatedWordsDto
 		{
 			Words = words,
@@ -181,6 +185,13 @@ public class WordService
 		};
 		return result;
 	}
+
+	//public async Task<List<WordDto>> GetWordsInDictionaryNotAdded()
+	//{
+	//	var currentDictionary = await _context.Rhymes.ToListAsync();
+
+	//	await _context.Words.Where(word => currentDictionary.Contains(word.WordKey.ToUpper()));
+	//}
 
 	public List<string> Vowels = new List<string>
 	{

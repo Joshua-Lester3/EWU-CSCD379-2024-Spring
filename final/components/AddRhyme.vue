@@ -1,6 +1,6 @@
 <template>
-  <v-dialog v-model="modelValue">
-    <v-card class="ma-auto" min-width="500">
+  <v-dialog v-model="modelValue" @update:model-value="added = false">
+    <v-card v-if="!added" class="ma-auto" min-width="500" min-height="500">
       <v-sheet :color="notAdded ? 'error' : 'secondary'">
         <v-row>
           <v-col cols="9">
@@ -15,7 +15,7 @@
           </v-col>
         </v-row>
       </v-sheet>
-      <v-sheet v-if="!notAdded" color="error">
+      <v-sheet v-if="notAdded" color="error">
         <v-card-text
           >Word was not added. Check formatting and dictionary for duplicate
           entry.</v-card-text
@@ -26,7 +26,8 @@
       <v-row>
         <v-col>
           <v-responsive max-width="125" class="mt-4 ml-4"
-            ><v-text-field
+            ><p class="mb-2">Pronunciation (syllables):</p>
+            <v-text-field
               v-for="(syllable, index) in syllablesPronunciation"
               :modelValue="syllable"></v-text-field>
             <v-text-field v-model="pronunciationAdded"></v-text-field>
@@ -34,15 +35,13 @@
               class="ml-8 mb-4"
               icon="mdi-plus"
               color="secondary"
-              @click="
-                appendPronunciationValue();
-                console.log(syllablesPronunciation);
-              "></v-btn
+              @click="appendPronunciationValue()"></v-btn
           ></v-responsive>
         </v-col>
         <v-col>
-          <v-responsive max-width="125" class="mt-4 ml-4"
-            ><v-text-field
+          <v-responsive max-width="125" class="mt-4 ml-4">
+            <p class="mb-2">Plain text (syllables):</p>
+            <v-text-field
               v-for="(syllable, index) in plainTextSyllables"
               :modelValue="syllable"></v-text-field>
             <v-text-field v-model="plainTextAdded"></v-text-field>
@@ -50,13 +49,15 @@
               class="ml-8 mb-4"
               icon="mdi-plus"
               color="secondary"
-              @click="
-                appendPlainTextValue();
-                console.log(plainTextSyllables);
-              "></v-btn
+              @click="appendPlainTextValue()"></v-btn
           ></v-responsive>
         </v-col>
       </v-row>
+    </v-card>
+    <v-card v-else>
+      <v-sheet color="success">
+        <v-card-title>Word successfully added!</v-card-title>
+      </v-sheet>
     </v-card>
   </v-dialog>
 </template>
@@ -71,12 +72,13 @@ const props = defineProps<{
 }>();
 const modelValue = defineModel<boolean>();
 const word = ref('');
-const syllablesPronunciation = ref<Array<string>>(['']);
+const syllablesPronunciation = ref<Array<string>>([]);
 const pronunciationAdded = ref('');
 const plainTextSyllables = ref<Array<string>>([]);
 const plainTextAdded = ref('');
 const isLoading = ref(false);
 const notAdded = ref(false);
+const added = ref(false);
 
 onMounted(() => {
   if (props.word) {
@@ -109,21 +111,29 @@ async function saveRhyme() {
     if (notAdded.value) {
       notAdded.value = false;
     }
+    if (pronunciationAdded.value.trim() !== '') {
+      appendPronunciationValue();
+    }
+    if (plainTextAdded.value.trim() !== '') {
+      appendPlainTextValue();
+    }
     isLoading.value = true;
-    const url = `word/addWord`;
+    const url = 'word/addWord';
+    debugger;
     const response = await Axios.post(url, {
       word: word.value,
       syllablesPronunciation: syllablesPronunciation.value,
-      plainTextSyllable: plainTextSyllables.value,
+      plainTextSyllables: plainTextSyllables.value,
     });
     isLoading.value = false;
     if (response.data) {
-      modelValue.value = false;
+      added.value = true;
     } else {
       notAdded.value = true;
     }
   } catch (error) {
     console.error('Error saving word information', error);
+    isLoading.value = false;
   }
 }
 </script>
