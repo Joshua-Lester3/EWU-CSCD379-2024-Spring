@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc;
 using Rhym.Api.Dtos;
 using Rhym.Api.Services;
 
@@ -8,7 +6,7 @@ namespace Rhym.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WordController
+public class WordController : ControllerBase
 {
 	private readonly WordService _service;
 
@@ -133,9 +131,30 @@ public class WordController
 	}
 
 	[HttpPost("AddWord")]
-	public async Task<bool> PostWord(WordDto dto)
+	public async Task<IActionResult> PostWord(WordDto dto)
 	{
-		return await _service.AddWord(dto);
+		if (string.IsNullOrEmpty(dto.Word))
+		{
+			return BadRequest("Word is empty.");
+		}
+		if (dto.SyllablesPronunciation.Length == 0)
+		{
+			return BadRequest("No pronunciation given.");
+		}
+		if (dto.PlainTextSyllables.Length == 0)
+		{
+			return BadRequest("No plaintext given.");
+		}
+		if (dto.SyllablesPronunciation.Length != dto.PlainTextSyllables.Length)
+		{
+			return BadRequest("Number of syllables for pronunciation and plaintext are not equal to each other.");
+		}
+
+		if (await _service.AddWord(dto))
+		{
+			return Ok();
+		}
+		return BadRequest("Word already in dictionary.");
 	}
 
 	[HttpGet("WordListPaginated")]

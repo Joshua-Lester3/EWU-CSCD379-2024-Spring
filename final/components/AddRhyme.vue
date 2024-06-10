@@ -5,9 +5,10 @@
         <v-row>
           <v-col cols="9">
             <v-text-field
-              class="largeWord ml-5"
+              class="largeWord ml-5 mt-2"
               variant="plain"
               v-model="word"
+              label="Enter word here"
               :disabled="props.word?.trim() === ''"></v-text-field>
           </v-col>
           <v-col>
@@ -25,7 +26,7 @@
 
       <v-row>
         <v-col>
-          <v-responsive max-width="125" class="mt-4 ml-4"
+          <v-responsive max-width="125" class="mt-4 ml-16"
             ><p class="mb-2">Pronunciation (syllables):</p>
             <v-text-field
               v-for="(syllable, index) in syllablesPronunciation"

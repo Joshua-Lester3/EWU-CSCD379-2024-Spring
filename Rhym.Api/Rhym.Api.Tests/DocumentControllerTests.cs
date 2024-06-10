@@ -14,6 +14,7 @@ public class DocumentControllerTests
 {
 	private static readonly WebApplicationFactory<Program> _factory = new();
 	private HttpClient _httpClient = null!; // Will be set in TestInitialize
+	private string TestGuid = Guid.NewGuid().ToString();
 
 	[TestInitialize]
 	public void Init()
@@ -39,9 +40,10 @@ public class DocumentControllerTests
 	{
 		// Arrange
 		await AddOneDocument();
+		var guid = Guid.NewGuid();
 		var queryParameters = new Dictionary<string, string>
 		{
-			{ "userId", "1" },
+			{ "userId", guid.ToString() },
 		};
 		var dictFormUrlEncoded = new FormUrlEncodedContent(queryParameters);
 		var queryString = await dictFormUrlEncoded.ReadAsStringAsync();
@@ -55,7 +57,7 @@ public class DocumentControllerTests
 		CollectionAssert.AllItemsAreNotNull(content);
 		CollectionAssert.AllItemsAreUnique(content);
 		Assert.AreEqual(1, content.Count());
-		Assert.AreEqual(0, content[0].UserId);
+		Assert.AreEqual<string>(guid.ToString(), content[0].UserId);
 	}
 
 	[TestMethod]
@@ -69,7 +71,7 @@ public class DocumentControllerTests
 		// Assert
 		var document = await response.Content.ReadFromJsonAsync<Document>();
 		Assert.IsNotNull(document);
-		Assert.AreEqual(0, document.UserId);
+		Assert.AreEqual(TestGuid, document.UserId);
 	}
 
 	[TestMethod]
@@ -121,7 +123,7 @@ public class DocumentControllerTests
 	{
 		DocumentDto request = new()
 		{
-			UserId = 0,
+			UserId = TestGuid,
 			Title = "Super duper title",
 			Content = "This is super duper!"
 		};

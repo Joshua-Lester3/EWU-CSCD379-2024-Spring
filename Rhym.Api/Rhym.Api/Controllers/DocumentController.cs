@@ -17,7 +17,7 @@ public class DocumentController : ControllerBase
 	}
 
 	[HttpGet("GetDocumentList")]
-	public async Task<List<Document>> GetDocumentListAsync(int userId)
+	public async Task<List<Document>> GetDocumentListAsync(string userId)
 	{
 		return await _service.GetDocumentListAsync(userId);
 	}

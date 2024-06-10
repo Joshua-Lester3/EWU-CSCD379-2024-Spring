@@ -1,7 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Rhym.Api;
 using Rhym.Api.Data;
+using Rhym.Api.Identity;
+using Rhym.Api.Models;
 using Rhym.Api.Services;
 
 var AllOrigins = "AllOrigins";
@@ -62,6 +68,30 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<WordService>();
 builder.Services.AddScoped<RhymHub>();
 
+// Identity Services
+builder.Services.AddIdentityCore<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
+	.AddRoles<IdentityRole>()
+	.AddEntityFrameworkStores<AppDbContext>(); // Tell identity where to sstore things
+
+// JWT Token Setup
+JwtConfiguration jwtConfig = builder.Configuration
+	.GetSection("Jwt").Get<JwtConfiguration>() ?? throw new InvalidOperationException("JWT config not specified");
+builder.Services.AddSingleton(jwtConfig);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+	.AddJwtBearer(options =>
+		options.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = true,
+			ValidateAudience = true,
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+			ValidIssuer = jwtConfig.Issuer,
+			ValidAudience = jwtConfig.Audience,
+			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret))
+		}
+	);
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -69,6 +99,9 @@ using (var scope = app.Services.CreateScope())
 	var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 	db.Database.Migrate();
 	await Seeder.Seed(db);
+	await IdentitySeed.SeedAsync(scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>(),
+		scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>(),
+		db);
 }
 
 // Configure the HTTP request pipeline.

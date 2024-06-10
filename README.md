@@ -1,3 +1,10 @@
+### to do 2:
+
+- do signalR
+- make everything pretty
+-
+- make everything responsive
+
 ### feats:
 
 X make color coded scheme plain english

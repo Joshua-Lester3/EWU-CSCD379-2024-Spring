@@ -9,8 +9,8 @@ public class Document
 	public bool Shared { get; set; } = false;
 
 	[Required]
-	public int UserId { get; set; }
-	public User? User { get; set; }
+	public string UserId { get; set; } = null!;
+	public AppUser? User { get; set; }
 
 	[Required]
 	public int DocumentDataId { get; set; }

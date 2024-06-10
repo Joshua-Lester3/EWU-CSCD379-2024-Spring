@@ -85,10 +85,10 @@ public class Seeder
 							WordId = foundWord.WordId,
 						};
 						await db.Syllables.AddAsync(syllable);
-						await db.SaveChangesAsync();
 					}
 					line = reader.ReadLine();
 				}
+				await db.SaveChangesAsync();
 				reader.Close();
 			}
 			catch (FileNotFoundException e)
@@ -115,7 +115,6 @@ public class Seeder
 				}
 			}
 			await db.SaveChangesAsync();
-			// get syllables from syllables table and add to main table - Rhymes
 		}
 	}
 }

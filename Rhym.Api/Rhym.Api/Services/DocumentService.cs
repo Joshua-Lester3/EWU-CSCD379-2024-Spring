@@ -16,7 +16,7 @@ public class DocumentService
 		_context = context;
 	}
 
-	public async Task<List<Document>> GetDocumentListAsync(int userId)
+	public async Task<List<Document>> GetDocumentListAsync(string userId)
 	{
 		return await _context.Documents.Where(document => document.UserId == userId).ToListAsync();
 	}

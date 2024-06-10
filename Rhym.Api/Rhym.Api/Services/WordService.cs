@@ -127,10 +127,7 @@ public class WordService
 
 	public async Task<bool> AddWord(WordDto dto)
 	{
-		if (dto.Word.IsNullOrEmpty() || dto.SyllablesPronunciation.Length == 0 || dto.PlainTextSyllables.Length == 0 || dto.SyllablesPronunciation.Length != dto.PlainTextSyllables.Length)
-		{
-			throw new ArgumentException("Invalid arguments. All arrays must have at least one element and Word must not be null or empty.");
-		}
+		
 		var foundWord = await _context.Rhymes.FirstOrDefaultAsync(rhyme => rhyme.Word.Equals(dto.Word.ToLower()));
 		if (foundWord is not null)
 		{
@@ -178,10 +175,15 @@ public class WordService
 				SyllablesPronunciation = rhyme.SyllablesPronunciation,
 				PlainTextSyllables = rhyme.PlainTextSyllables,
 			}).ToList();
+		int numberOfRhymes = await _context.Rhymes.CountAsync();
+		int rhymesDivided = numberOfRhymes / countPerPage;
+		if (numberOfRhymes % countPerPage != 0) {
+			rhymesDivided++;
+		}
 		PaginatedWordsDto result = new PaginatedWordsDto
 		{
 			Words = words,
-			Pages = await _context.Rhymes.CountAsync()
+			Pages = rhymesDivided,
 		};
 		return result;
 	}

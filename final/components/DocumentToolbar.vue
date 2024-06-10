@@ -31,7 +31,7 @@
       </v-menu>
     </v-btn>
     <v-btn density="compact"
-      >Rhym
+      >Rhyme
       <v-menu activator="parent">
         <v-list>
           <v-list-item density="compact">
@@ -47,6 +47,18 @@
         </v-list>
       </v-menu>
     </v-btn>
+    <v-btn density="compact"
+      >Share
+      <v-menu activator="parent">
+        <v-list>
+          <v-list-item density="compact">
+            <v-list-item-title @click="$emit('showLinkDialog')"
+              >Get link</v-list-item-title
+            >
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </v-btn>
   </v-toolbar>
 </template>
 
@@ -57,5 +69,6 @@ defineEmits([
   'saveChanges',
   'showRhymeSchemeWindow',
   'showRhymDialog',
+  'showLinkDialog',
 ]);
 </script>

@@ -4,9 +4,8 @@
     @deleteDocument="deleteDocument"
     @saveChanges="saveChanges"
     @show-rhym-dialog="rhymDialog = !rhymDialog"
-    @show-rhyme-scheme-window="
-      showRhymeSchemeWindow = !showRhymeSchemeWindow
-    " />
+    @show-rhyme-scheme-window="showRhymeSchemeWindow = !showRhymeSchemeWindow"
+    @showLinkDialog="showLinkDialog = true" />
   <v-progress-linear v-if="isBusy" color="secondary" indeterminate />
   <v-row>
     <v-window
@@ -68,27 +67,32 @@
     v-model:showModel="rhymDialog"
     v-model:content="content"
     @appendWord="word => appendWord(word)" />
+  <LinkDialog :documentId v-model="showLinkDialog" />
 </template>
 
 <script setup lang="ts">
 import Axios from 'axios';
 import { RhymeUtils, Word, Syllable } from '~/scripts/rhymeUtils';
-import { useTheme } from 'vuetify';
+import TokenService from '~/scripts/tokenService';
 
 const modelValue = defineModel<string>({ required: false, default: '' });
+const tokenService: Ref<TokenService> | undefined = inject('TOKEN');
 const route = useRoute();
 const router = useRouter();
 const content = ref(modelValue.value);
 const title = ref('');
 const rhymDialog = ref(false);
 let documentId: number;
-const userId = 1;
+const userId = computed(() => {
+  return tokenService?.value.getGuid();
+});
 const isBusy = ref(false);
 const window = ref(0);
 const showRhymeSchemeWindow = ref(false);
 const rhymeSchemeContent = ref('');
 const rhymeSchemeColorContent = ref<Word[]>([]);
 const utils = new RhymeUtils();
+const showLinkDialog = ref(false);
 
 try {
   let stringId = route.query.id as string;
@@ -97,7 +101,7 @@ try {
   if (documentId < 0) {
     const url = 'document/addDocument';
     const response = await Axios.post(url, {
-      UserId: userId,
+      UserId: userId.value,
       DocumentId: documentId,
       Title: 'Untitled',
       Content: '',
@@ -118,7 +122,7 @@ async function saveChanges() {
   try {
     const url = 'document/addDocument';
     await Axios.post(url, {
-      UserId: userId,
+      UserId: userId.value,
       DocumentId: documentId,
       Title: title.value,
       Content: content.value,

@@ -60,16 +60,16 @@ onMounted(() => {
 });
 
 async function setWords() {
-  // try {
-  //   const url = `word/wordListPaginated?countPerPage=${
-  //     countPerPage.value
-  //   }&pageNumber=${page.value - 1}`;
-  //   const response = await Axios.get(url);
-  //   words.value = response.data.words;
-  //   length.value = response.data.pages;
-  //   isLoading.value = false;
-  // } catch (error) {
-  //   console.error('Error getting word information', error);
-  // }
+  try {
+    const url = `word/wordListPaginated?countPerPage=${
+      countPerPage.value
+    }&pageNumber=${page.value - 1}`;
+    const response = await Axios.get(url);
+    words.value = response.data.words;
+    length.value = response.data.pages;
+    isLoading.value = false;
+  } catch (error) {
+    console.error('Error getting word information', error);
+  }
 }
 </script>
