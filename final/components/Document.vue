@@ -72,6 +72,7 @@
     v-model="showLinkDialog"
     :shared="isShared"
     @toggle-shared="isShared => toggleShared(isShared)" />
+  <NotSharedDialog v-model="notSharedDialog" />
 </template>
 
 <script setup lang="ts">
@@ -98,6 +99,7 @@ const rhymeSchemeColorContent = ref<Word[]>([]);
 const utils = new RhymeUtils();
 const showLinkDialog = ref(false);
 const isShared = ref(false);
+const notSharedDialog = ref(false);
 
 try {
   let stringId = route.query.id as string;
@@ -117,9 +119,16 @@ try {
   } else {
     const url = `document/getDocumentData?documentId=${documentId}`;
     const response = await Axios.get(url);
-    title.value = response.data.title;
-    content.value = response.data.content;
-    isShared.value = response.data.isShared;
+    if (
+      !response.data.isShared &&
+      tokenService?.value.getGuid().localeCompare(response.data.userId) != 0
+    ) {
+      notSharedDialog.value = true;
+    } else {
+      title.value = response.data.title;
+      content.value = response.data.content;
+      isShared.value = response.data.isShared;
+    }
   }
 } catch (error) {
   console.error('Error fetching selected word:', error);
