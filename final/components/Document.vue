@@ -67,7 +67,11 @@
     v-model:showModel="rhymDialog"
     v-model:content="content"
     @appendWord="word => appendWord(word)" />
-  <LinkDialog :documentId v-model="showLinkDialog" />
+  <LinkDialog
+    :documentId
+    v-model="showLinkDialog"
+    :shared="isShared"
+    @toggle-shared="isShared => toggleShared(isShared)" />
 </template>
 
 <script setup lang="ts">
@@ -93,6 +97,7 @@ const rhymeSchemeContent = ref('');
 const rhymeSchemeColorContent = ref<Word[]>([]);
 const utils = new RhymeUtils();
 const showLinkDialog = ref(false);
+const isShared = ref(false);
 
 try {
   let stringId = route.query.id as string;
@@ -105,6 +110,7 @@ try {
       DocumentId: documentId,
       Title: 'Untitled',
       Content: '',
+      IsShared: false,
     });
     title.value = response.data.title;
     documentId = response.data.documentId;
@@ -113,6 +119,7 @@ try {
     const response = await Axios.get(url);
     title.value = response.data.title;
     content.value = response.data.content;
+    isShared.value = response.data.isShared;
   }
 } catch (error) {
   console.error('Error fetching selected word:', error);
@@ -127,6 +134,16 @@ async function saveChanges() {
       Title: title.value,
       Content: content.value,
     });
+  } catch (error) {
+    console.error('Error posting document information', error);
+  }
+}
+
+async function toggleShared(isSharedUpdated: boolean) {
+  try {
+    const url = `document/toggleShared?documentId=${documentId}&isShared=${isSharedUpdated}`;
+    await Axios.post(url, {});
+    isShared.value = isSharedUpdated;
   } catch (error) {
     console.error('Error posting document information', error);
   }

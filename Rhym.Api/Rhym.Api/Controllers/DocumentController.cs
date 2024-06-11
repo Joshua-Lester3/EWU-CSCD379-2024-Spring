@@ -28,6 +28,12 @@ public class DocumentController : ControllerBase
 		return await _service.PostDocumentAsync(dto);
 	}
 
+	[HttpPost("ToggleShared")]
+	public async Task<Document?> ToggleSharedAsync(int documentId, bool isShared)
+	{
+		return await _service.ToggleSharedAsync(documentId, isShared);
+	}
+
 	[HttpGet("GetDocumentData")]
 	public async Task<DocumentDto?> GetDocumentAsync(int documentId)
 	{

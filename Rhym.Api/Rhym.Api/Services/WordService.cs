@@ -165,7 +165,7 @@ public class WordService
 
 	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber)
 	{
-		var words = _context.Rhymes
+		var words = await _context.Rhymes
 			.OrderBy(rhyme => rhyme.Word.ToLower())
 			.Skip(pageNumber * countPerPage)
 			.Take(countPerPage)
@@ -174,7 +174,7 @@ public class WordService
 				Word = rhyme.Word,
 				SyllablesPronunciation = rhyme.SyllablesPronunciation,
 				PlainTextSyllables = rhyme.PlainTextSyllables,
-			}).ToList();
+			}).ToListAsync();
 		int numberOfRhymes = await _context.Rhymes.CountAsync();
 		int rhymesDivided = numberOfRhymes / countPerPage;
 		if (numberOfRhymes % countPerPage != 0) {

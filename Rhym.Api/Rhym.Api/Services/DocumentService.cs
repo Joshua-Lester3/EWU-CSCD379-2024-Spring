@@ -11,6 +11,7 @@ public class DocumentService
 	private static object _changingDocumentLock = new();
 	private static object _addingDocumentLock = new();
 	private static object _deletingDocumentLock = new();
+	private static object _togglingSharedLock = new();
 	public DocumentService(AppDbContext context)
 	{
 		_context = context;
@@ -23,17 +24,25 @@ public class DocumentService
 
 	public async Task<Document> PostDocumentAsync(DocumentDto request)
 	{
-		Document? foundDocument = await _context.Documents.
-			Where(dbDocument => dbDocument.DocumentId == request.DocumentId).
-			Include(document => document.DocumentData).
-			FirstOrDefaultAsync();
+		Document? foundDocument = null;
+		if (request.DocumentId != -1)
+		{
+			foundDocument = await _context.Documents.
+				Where(dbDocument => dbDocument.DocumentId == request.DocumentId).
+				Include(document => document.DocumentData).
+				FirstOrDefaultAsync();
+		}
 		if (foundDocument is null)
 		{
 			lock (_addingDocumentLock)
 			{
-				foundDocument = _context.Documents.
-					Include(dbDocument => dbDocument.DocumentData).
-					FirstOrDefault(dbDocument => dbDocument.DocumentId == request.DocumentId);
+				if (request.DocumentId != -1)
+				{
+					foundDocument = _context.Documents.
+						Include(dbDocument => dbDocument.DocumentData).
+						FirstOrDefault(dbDocument => dbDocument.DocumentId == request.DocumentId);
+				}
+
 				if (foundDocument is null)
 				{
 					DocumentData data = new DocumentData
@@ -47,6 +56,7 @@ public class DocumentService
 						UserId = request.UserId,
 						DocumentData = data,
 						Title = request.Title,
+						Shared = request.IsShared,
 					};
 					_context.Documents.Add(addedDocument);
 					_context.SaveChanges();
@@ -62,6 +72,7 @@ public class DocumentService
 					foundDocumentData.Content = request.Content;
 					//foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
 					foundDocument.Title = request.Title;
+					foundDocument.Shared = request.IsShared;
 					_context.SaveChanges();
 					return foundDocument;
 				}
@@ -79,6 +90,7 @@ public class DocumentService
 				foundDocumentData.Content = request.Content;
 				//foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
 				foundDocument.Title = request.Title;
+				foundDocument.Shared = request.IsShared;
 				_context.SaveChanges();
 				return foundDocument;
 			}
@@ -96,6 +108,7 @@ public class DocumentService
 				DocumentId = document.DocumentId,
 				Title = document.Title,
 				Content = document.DocumentData!.Content,
+				IsShared = document.Shared,
 			})
 			.FirstOrDefaultAsync();
 		return result;
@@ -124,5 +137,24 @@ public class DocumentService
 			}
 		}
 		return false;
+	}
+
+	public async Task<Document?> ToggleSharedAsync(int documentId, bool isShared)
+	{
+		var foundDocument = await _context.Documents.FirstOrDefaultAsync(document => document.DocumentId == documentId);
+		if (foundDocument is not null)
+		{
+			lock (_togglingSharedLock)
+			{
+				foundDocument = _context.Documents.FirstOrDefault(document => document.DocumentId == documentId);
+				if (foundDocument is not null)
+				{
+					foundDocument.Shared = isShared;
+					_context.SaveChanges();
+				}
+				return foundDocument;
+			}
+		}
+		return null;
 	}
 }
