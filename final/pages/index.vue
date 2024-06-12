@@ -23,10 +23,9 @@
       <v-card
         height="200"
         width="150"
-        class="align-center d-flex justify-center mt-2"
+        class="align-center d-flex justify-center mt-2 mb-6"
         @click="$router.push('/documentView?id=-1')">
         <v-icon class="mb-5">mdi-plus</v-icon>
-        <!-- <v-btn class="mb-5" size="70" elevation="0" icon="mdi-plus"></v-btn> -->
       </v-card>
     </v-container>
     <v-container>
@@ -34,14 +33,16 @@
         <v-col
           class="my-4"
           align="center"
-          cols="4"
+          cols="12"
+          sm="12"
+          md="6"
+          lg="4"
           v-for="document in documents"
           :key="document.documentId">
           <v-card
             @click="$router.push(`/documentView?id=${document.documentId}`)"
-            height="200"
-            width="150"
             elevation="2"
+            :height="300"
             class="align-center d-flex justify-center"
             ><p class="mb-5">
               {{ document.title }}
@@ -60,11 +61,11 @@
 // have each v-card link to documentView, connecting the id of
 // each document to the documentView (somehow??), so the view knows
 // document to open
-import { useTheme } from 'vuetify';
+import { useDisplay } from 'vuetify';
 import Axios from 'axios';
 import TokenService from '~/scripts/tokenService';
 
-const theme = useTheme();
+const display = useDisplay();
 const router = useRouter();
 const documents = ref<Document[]>();
 const tokenService: Ref<TokenService> | undefined = inject('TOKEN');
@@ -75,6 +76,18 @@ interface Document {
   documentId: number;
   title: string;
 }
+
+const getHeight = computed(() => {
+  if (display.sm) {
+    return 300;
+  }
+  if (display.md) {
+    return 200;
+  }
+  if (display.lg) {
+    return 300;
+  }
+});
 
 onMounted(async () => {
   const guid = tokenService?.value.getGuid();
