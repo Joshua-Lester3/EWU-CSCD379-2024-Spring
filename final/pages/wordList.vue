@@ -15,6 +15,13 @@
         <v-btn color="secondary" @click="showAddRhyme = true">Add Rhyme</v-btn>
       </v-col>
     </v-row>
+    <v-card-text>
+      <v-text-field
+        label="Search for rhyme"
+        append-inner-icon="mdi-magnify"
+        @click:append-inner="setWords"
+        v-model="searchTerm" />
+    </v-card-text>
     <v-table>
       <thead>
         <tr>
@@ -43,10 +50,13 @@ import Axios from 'axios';
 
 const isLoading = ref(true);
 const countPerPage = ref(25);
+const previousCountPerPage = ref(25);
 const page = ref(1);
 const words = ref<Array<WordDto>>([]);
 const length = ref(0);
 const showAddRhyme = ref(false);
+const searchTerm = ref('');
+const previousSearchTerm = ref('');
 
 interface WordDto {
   word: string;
@@ -61,9 +71,23 @@ onMounted(() => {
 
 async function setWords() {
   try {
-    const url = `word/wordListPaginated?countPerPage=${
+    if (previousCountPerPage.value !== countPerPage.value) {
+      page.value = 1;
+      previousCountPerPage.value = countPerPage.value;
+    }
+    if (
+      searchTerm.value.trim().localeCompare(previousSearchTerm.value.trim()) !==
+      0
+    ) {
+      page.value = 1;
+      previousSearchTerm.value = searchTerm.value.trim();
+    }
+    let url = `word/wordListPaginated?countPerPage=${
       countPerPage.value
     }&pageNumber=${page.value - 1}`;
+    if (searchTerm.value.trim() !== '') {
+      url += `&word=${searchTerm.value}`;
+    }
     const response = await Axios.get(url);
     words.value = response.data.words;
     length.value = response.data.pages;

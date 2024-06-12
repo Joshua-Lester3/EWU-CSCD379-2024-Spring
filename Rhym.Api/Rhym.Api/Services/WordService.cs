@@ -163,10 +163,15 @@ public class WordService
 		return true;
 	}
 
-	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber)
+	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber, string? word)
 	{
-		var words = await _context.Rhymes
-			.OrderBy(rhyme => rhyme.Word.ToLower())
+		var orderedWords = _context.Rhymes
+			.OrderBy(rhyme => rhyme.Word.ToLower());
+		if (word is not null)
+		{
+			orderedWords = (IOrderedQueryable<Rhyme>) orderedWords.Where(rhyme => rhyme.Word.StartsWith(word.Trim().ToUpper()));
+		}
+		var words = await orderedWords
 			.Skip(pageNumber * countPerPage)
 			.Take(countPerPage)
 			.Select(rhyme => new WordDto
@@ -175,7 +180,14 @@ public class WordService
 				SyllablesPronunciation = rhyme.SyllablesPronunciation,
 				PlainTextSyllables = rhyme.PlainTextSyllables,
 			}).ToListAsync();
-		int numberOfRhymes = await _context.Rhymes.CountAsync();
+		int numberOfRhymes = 0;
+		if (word is null)
+		{
+			numberOfRhymes = await _context.Rhymes.CountAsync();
+		} else
+		{
+			numberOfRhymes = await _context.Rhymes.Where(rhyme => rhyme.Word.StartsWith(word.Trim().ToUpper())).CountAsync();
+		}
 		int rhymesDivided = numberOfRhymes / countPerPage;
 		if (numberOfRhymes % countPerPage != 0) {
 			rhymesDivided++;
@@ -186,6 +198,11 @@ public class WordService
 			Pages = rhymesDivided,
 		};
 		return result;
+	}
+
+	public async Task<Rhyme?> GetWord(string word)
+	{
+		return await _context.Rhymes.FirstOrDefaultAsync(rhyme => rhyme.Word.Equals(word.Trim().ToUpper()));
 	}
 
 	//public async Task<List<WordDto>> GetWordsInDictionaryNotAdded()

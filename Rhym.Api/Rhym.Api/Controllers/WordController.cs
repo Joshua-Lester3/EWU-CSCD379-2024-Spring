@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Rhym.Api.Dtos;
+using Rhym.Api.Models;
 using Rhym.Api.Services;
 
 namespace Rhym.Api.Controllers;
@@ -25,6 +26,12 @@ public class WordController : ControllerBase
 	public async Task<string[]?> GetPronunciation(string word)
 	{
 		return await _service.GetPhonemes(word);
+	}
+
+	[HttpGet("GetWord")]
+	public async Task<Rhyme?> GetWord(string word)
+	{
+		return await _service.GetWord(word);
 	}
 
 	[HttpPost("PoemPronunciationPretty")]
@@ -158,9 +165,9 @@ public class WordController : ControllerBase
 	}
 
 	[HttpGet("WordListPaginated")]
-	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber)
+	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber, string? word = null)
 	{
-		return await _service.GetWordListPaginated(countPerPage, pageNumber);
+		return await _service.GetWordListPaginated(countPerPage, pageNumber, word);
 	}
 
 	//[HttpGet("WordsInDictionaryNotAdded")]

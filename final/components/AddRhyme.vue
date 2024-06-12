@@ -11,8 +11,9 @@
               label="Enter word here"
               :disabled="props.word?.trim() === ''"></v-text-field>
           </v-col>
-          <v-col>
-            <v-btn class="mt-6" @click="saveRhyme">Save</v-btn>
+
+          <v-col cols="2">
+            <v-btn class="mt-6 mr-2" @click="saveRhyme">Save</v-btn>
           </v-col>
         </v-row>
       </v-sheet>
@@ -109,9 +110,8 @@ function appendPlainTextValue() {
 
 async function saveRhyme() {
   try {
-    if (notAdded.value) {
-      notAdded.value = false;
-    }
+    notAdded.value = false;
+    added.value = false;
     if (pronunciationAdded.value.trim() !== '') {
       appendPronunciationValue();
     }
@@ -127,13 +127,10 @@ async function saveRhyme() {
       plainTextSyllables: plainTextSyllables.value,
     });
     isLoading.value = false;
-    if (response.data) {
-      added.value = true;
-    } else {
-      notAdded.value = true;
-    }
+    added.value = true;
   } catch (error) {
     console.error('Error saving word information', error);
+    notAdded.value = true;
     isLoading.value = false;
   }
 }
