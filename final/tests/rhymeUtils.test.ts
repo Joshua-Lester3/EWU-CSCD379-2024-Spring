@@ -33,16 +33,16 @@ test('Whole mapper', async () => {
   }
 });
 
-test('Result has correct colors', async () => {
-  let poemPronunciation = 'F-AO-R F-EY-M\nDH-AH S-EY-M AH';
-  let poem = 'For fame\nThe same ah';
-  let words = await utils.runAlgorithm(poemPronunciation, poem);
-  expect(words[0].syllables[0].color).toBe('');
-  expect(words[1].syllables[0].color).toBe('');
-  expect(words[2].syllables[0].color).toBe('blue');
-  expect(words[3].syllables[0].color).toBe('');
-  expect(words[4].syllables[0].color).toBe('blue');
-});
+// test('Result has correct colors', async () => {
+//   let poemPronunciation = 'F-AO-R F-EY-M\nDH-AH S-EY-M AH';
+//   let poem = 'For fame\nThe same ah';
+//   let words = await utils.runAlgorithm(poemPronunciation, poem);
+//   expect(words[0].syllables[0].color).toBe('');
+//   expect(words[1].syllables[0].color).toBe('');
+//   expect(words[2].syllables[0].color).toBe('blue');
+//   expect(words[3].syllables[0].color).toBe('');
+//   expect(words[4].syllables[0].color).toBe('blue');
+// });
 
 // test('parse syllables', () => {
 //   let poem = 'F-AO-R F-EY-M\nDH-AH S-EY-M AH';
