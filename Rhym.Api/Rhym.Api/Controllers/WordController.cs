@@ -169,10 +169,4 @@ public class WordController : ControllerBase
 	{
 		return await _service.GetWordListPaginated(countPerPage, pageNumber, word);
 	}
-
-	//[HttpGet("WordsInDictionaryNotAdded")]
-	//public async Task<List<WordDto>> GetWordsInDictionaryNotAdded()
-	//{
-	//	return await _service.GetWordsInDictionaryNotAdded();
-	//}
 }
