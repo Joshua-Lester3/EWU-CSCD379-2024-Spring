@@ -8,7 +8,7 @@ export default defineNuxtPlugin(() => {
     ) {
       Axios.defaults.baseURL = 'https://localhost:7166/';
     } else {
-      Axios.defaults.baseURL = 'NO-API-YET';
+      Axios.defaults.baseURL = 'rhymeapi.azurewebsites.net';
     }
   }
 });

@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy(name: AllOrigins, policy =>
 	{
-		policy.WithOrigins("http://localhost:3000" /*, "STATIC-WEB-APP" */);
+		policy.WithOrigins("http://localhost:3000", "https://proud-sand-027822d1e.5.azurestaticapps.net");
 		policy.AllowAnyMethod();
 		policy.AllowAnyHeader();
 		policy.AllowCredentials();
