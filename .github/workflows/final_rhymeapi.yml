@@ -30,6 +30,7 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
+        working-directory: Rhym.Api
 
       - name: dotnet test
         run: dotnet test
