@@ -17,22 +17,13 @@ public class Seeder
 			string? line;
 			try
 			{
-				string? projectDirectory = Environment.CurrentDirectory;
-				if (projectDirectory == null)
-				{
-					throw new InvalidOperationException("Could not find directory");
-				}
-				projectDirectory = Path.Combine(projectDirectory, "Dictionary.txt");
-				StreamReader reader = new StreamReader(projectDirectory);
-				Rhyme rhyme = new Rhyme
-				{
-					Word = projectDirectory,
-					Phonemes = [],
-					SyllablesPronunciation = [],
-					PlainTextSyllables = [],
-				};
-				await db.Rhymes.AddAsync(rhyme);
-				await db.SaveChangesAsync();
+				//string? projectDirectory = Environment.CurrentDirectory;
+				//if (projectDirectory == null)
+				//{
+				//	throw new InvalidOperationException("Could not find directory");
+				//}
+				//projectDirectory = Path.Combine(projectDirectory, "Dictionary.txt");
+				StreamReader reader = new StreamReader(Dictionary.Words);
 				line = reader.ReadLine();
 
 				while (line != null)
@@ -72,22 +63,13 @@ public class Seeder
 			string? line;
 			try
 			{
-				string? projectDirectory = Environment.CurrentDirectory;
-				Rhyme rhyme = new Rhyme
-				{
-					Word = projectDirectory,
-					Phonemes = [],
-					SyllablesPronunciation = [],
-					PlainTextSyllables = [],
-				};
-				await db.Rhymes.AddAsync(rhyme);
-				await db.SaveChangesAsync();
-				if (projectDirectory == null)
-				{
-					throw new InvalidOperationException("Could not find directory");
-				}
-				projectDirectory = Path.Combine(projectDirectory, "Syllables.txt");
-				StreamReader reader = new StreamReader(projectDirectory);
+				//string? projectDirectory = Environment.CurrentDirectory;
+				//if (projectDirectory == null)
+				//{
+				//	throw new InvalidOperationException("Could not find directory");
+				//}
+				//projectDirectory = Path.Combine(projectDirectory, "Syllables.txt");
+				StreamReader reader = new StreamReader(Syllables.Sylls);
 				line = reader.ReadLine();
 				while (!line.IsNullOrEmpty())
 				{
