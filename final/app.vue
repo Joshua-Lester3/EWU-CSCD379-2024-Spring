@@ -26,6 +26,9 @@
     </v-app-bar>
     <v-navigation-drawer location="right" width="175" v-model="drawer">
       <v-list>
+        <v-list-item @click="$router.push('/about')">
+          <v-icon>mdi-information-slab-box-outline</v-icon> About
+        </v-list-item>
         <v-list-item @click="$router.push('/')">
           <v-icon>mdi-home</v-icon> Home
         </v-list-item>

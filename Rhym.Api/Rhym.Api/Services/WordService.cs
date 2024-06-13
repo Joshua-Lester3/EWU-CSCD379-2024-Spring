@@ -166,7 +166,7 @@ public class WordService
 	public async Task<PaginatedWordsDto> GetWordListPaginated(int countPerPage, int pageNumber, string? word)
 	{
 		var orderedWords = _context.Rhymes
-			.OrderBy(rhyme => rhyme.Word.ToLower());
+			.OrderBy(rhyme => rhyme.Word);
 		if (word is not null)
 		{
 			orderedWords = (IOrderedQueryable<Rhyme>) orderedWords.Where(rhyme => rhyme.Word.StartsWith(word.Trim().ToUpper()));
