@@ -5,9 +5,6 @@ name: Build and deploy ASP.Net Core app to Azure Web App - rhymeapi
 
 on:
   push:
-    paths:
-      - Rhym.Api/**
-  pull_request:
     branches:
       - Final
   workflow_dispatch:
@@ -15,9 +12,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: ./Rhym.Api
 
     steps:
       - uses: actions/checkout@v4
@@ -29,23 +23,19 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build Rhym.Api.sln --configuration Release
-
-      - name: dotnet test
-        run: dotnet test
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{runner.temp}}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{runner.temp}}/myapp
+          path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
     runs-on: windows-latest
-    if: (github.ref == 'refs/heads/Final' || github.event_name == 'workflow_dispatch')
     needs: build
     environment:
       name: 'Production'
@@ -63,5 +53,5 @@ jobs:
         with:
           app-name: 'rhymeapi'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_24D4BE6F6FA0478391C514A23E87764E }}
           package: .
-          
