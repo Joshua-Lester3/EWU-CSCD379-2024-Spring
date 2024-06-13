@@ -70,7 +70,6 @@ public class DocumentService
 						throw new InvalidOperationException("Invalid state: No DocumentData for the corresponding Document entity.");
 					}
 					foundDocumentData.Content = request.Content;
-					//foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
 					foundDocument.Title = request.Title;
 					foundDocument.Shared = request.IsShared;
 					_context.SaveChanges();
@@ -88,7 +87,6 @@ public class DocumentService
 					throw new InvalidOperationException("Invalid state: No DocumentData for the corresponding Document entity.");
 				}
 				foundDocumentData.Content = request.Content;
-				//foundDocument.DocumentData!.Content = request.Content; //DocumentData will never be null here
 				foundDocument.Title = request.Title;
 				foundDocument.Shared = request.IsShared;
 				_context.SaveChanges();
