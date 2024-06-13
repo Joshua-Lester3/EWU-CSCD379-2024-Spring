@@ -73,6 +73,15 @@ public class Seeder
 			try
 			{
 				string? projectDirectory = Environment.CurrentDirectory;
+				Rhyme rhyme = new Rhyme
+				{
+					Word = projectDirectory,
+					Phonemes = [],
+					SyllablesPronunciation = [],
+					PlainTextSyllables = [],
+				};
+				await db.Rhymes.AddAsync(rhyme);
+				await db.SaveChangesAsync();
 				if (projectDirectory == null)
 				{
 					throw new InvalidOperationException("Could not find directory");
