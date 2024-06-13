@@ -5,6 +5,9 @@ name: Build and deploy ASP.Net Core app to Azure Web App - rhymeapi
 
 on:
   push:
+    paths:
+      - Rhym.Api/**
+  pull_request:
     branches:
       - Final
   workflow_dispatch:
@@ -12,6 +15,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./Rhym.Api
 
     steps:
       - uses: actions/checkout@v4
@@ -25,23 +31,25 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      - name: dotnet test
+        run: dotnet test
+
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ${{runner.temp}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{runner.temp}}/myapp
 
   deploy:
     runs-on: windows-latest
+    if: (github.ref == 'refs/heads/Final' || github.event_name == 'workflow_dispatch')
     needs: build
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
