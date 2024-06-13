@@ -3,7 +3,7 @@
   <v-app>
     <v-toolbar height="50" color="background">
       <v-row>
-        <v-col cols="7"> </v-col>
+        <v-col cols="7"> <v-btn @click="">Seed</v-btn> </v-col>
         <v-col cols="5">
           <v-text-field
             label="Other note's URL"
@@ -111,6 +111,15 @@ function openOtherDocument() {
   } else {
     error.value = false;
     router.push(`/documentView?id=${documentId}`);
+  }
+}
+
+async function seed() {
+  try {
+    const url = `word/seed`;
+    const response = await Axios.get(url);
+  } catch (error) {
+    console.error('Error seeding:', error);
   }
 }
 </script>
