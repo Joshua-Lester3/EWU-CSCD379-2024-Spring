@@ -29,8 +29,7 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
-        working-directory: Rhym.Api
+        run: dotnet build Rhym.Api.sln --configuration Release
 
       - name: dotnet test
         run: dotnet test
