@@ -205,6 +205,11 @@ public class WordService
 		return await _context.Rhymes.FirstOrDefaultAsync(rhyme => rhyme.Word.Equals(word.Trim().ToUpper()));
 	}
 
+	public async Task Seed()
+	{
+		await Seeder.Seed(_context);
+	}
+
 	//public async Task<List<WordDto>> GetWordsInDictionaryNotAdded()
 	//{
 	//	var currentDictionary = await _context.Rhymes.ToListAsync();

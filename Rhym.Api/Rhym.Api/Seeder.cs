@@ -99,6 +99,16 @@ public class Seeder
 
 		if (!db.Rhymes.Any())
 		{
+			Rhyme rhyme2 = new Rhyme
+			{
+				Word = "Hi",
+				Phonemes = [],
+				SyllablesPronunciation = [],
+				PlainTextSyllables = [],
+			};
+			await db.Rhymes.AddAsync(rhyme2);
+			await db.SaveChangesAsync();
+
 			var syllables = await db.Syllables.Include(syllable => syllable.Word).ToListAsync();
 			foreach (Syllable syllable in syllables)
 			{

@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Rhym.Api.Dtos;
+using Rhym.Api.Identity;
 using Rhym.Api.Models;
 using Rhym.Api.Services;
 
@@ -135,6 +138,13 @@ public class WordController : ControllerBase
 	public async Task<List<string>> GetPronunciationToPlain(string word)
 	{
 		return await _service.GetPronunciationToPlain(word);
+	}
+
+	[HttpGet("Seed")]
+	[Authorize(Policy = Policies.Admin)]
+	public async Task Seed()
+	{
+		await _service.Seed();
 	}
 
 	[HttpPost("AddWord")]
