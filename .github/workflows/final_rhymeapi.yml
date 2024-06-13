@@ -18,7 +18,7 @@ jobs:
     defaults:
       run:
         working-directory: ./Rhym.Api
-
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +30,7 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build Rhym.Api.sln --configuration Release
-
+        
       - name: dotnet test
         run: dotnet test
 
@@ -63,5 +63,5 @@ jobs:
         with:
           app-name: 'rhymeapi'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_24D4BE6F6FA0478391C514A23E87764E }}
           package: .
-          
