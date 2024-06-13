@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Rhym.Api.Data;
 using Rhym.Api.Models;
+using System;
 using System.Data.Common;
 using System.IO;
 
@@ -23,6 +24,15 @@ public class Seeder
 				}
 				projectDirectory = Path.Combine(projectDirectory, "Dictionary.txt");
 				StreamReader reader = new StreamReader(projectDirectory);
+				Rhyme rhyme = new Rhyme
+				{
+					Word = projectDirectory,
+					Phonemes = [],
+					SyllablesPronunciation = [],
+					PlainTextSyllables = [],
+				};
+				await db.Rhymes.AddAsync(rhyme);
+				await db.SaveChangesAsync();
 				line = reader.ReadLine();
 
 				while (line != null)
@@ -99,16 +109,6 @@ public class Seeder
 
 		if (!db.Rhymes.Any())
 		{
-			Rhyme rhyme2 = new Rhyme
-			{
-				Word = "Hi",
-				Phonemes = [],
-				SyllablesPronunciation = [],
-				PlainTextSyllables = [],
-			};
-			await db.Rhymes.AddAsync(rhyme2);
-			await db.SaveChangesAsync();
-
 			var syllables = await db.Syllables.Include(syllable => syllable.Word).ToListAsync();
 			foreach (Syllable syllable in syllables)
 			{
